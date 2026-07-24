@@ -1,0 +1,51 @@
+ <!DOCTYPE html>
+ <html lang="ko"><head>
+ <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+ <title>预订管理 | 巴伦旅游 管理</title>
+ <link rel="stylesheet" href="/style.css">
+ </head><body>
+ <div class="admin-layout">
+   <div class="admin-sidebar">
+     <h2>巴伦旅游</h2>
+     <a href="/admin-orders.html" class="active">📋 预订管理</a>
+     <a href="/admin-products.html">📦 商品管理</a>
+     <a href="/" style="margin-top:40px;font-size:12px">🏠 查看网站</a>
+     <a href="#" onclick="logout()" style="font-size:12px">🚪 退出登录</a>
+   </div>
+   <div class="admin-main">
+     <h1 style="font-size:24px;font-weight:700;margin-bottom:20px">预订管理</h1>
+     <div id="ordersContent" style="text-align:center;padding:40px;color:#9ca3af">加载中...</div>
+   </div>
+ </div>
+ <script>
+ function logout() { sessionStorage.removeItem("admin"); window.location.href = "/admin.html"; }
+ if(sessionStorage.getItem("admin") !== "true") window.location.href = "/admin.html";
+ 
+ async function loadOrders() {
+   const res = await fetch("/api/admin/reservations");
+   const orders = await res.json();
+   const c = document.getElementById("ordersContent");
+   if(orders.length === 0) { c.innerHTML = '<div class="empty-state"><div class="emoji">📋</div><p>暂无预订记录。</p></div>'; return; }
+   c.innerHTML = `<table class="admin-table"><thead><tr><th>预订编号</th><th>상품</th><th>客户名</th><th>연락처</th><th>出发日期</th><th>金额</th><th>状态</th><th>操作</th></tr></thead><tbody>${orders.map(o => `
+     <tr><td style="font-size:11px;color:#9ca3af">${o.id.substring(0,8)}</td>
+     <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px">${o.productTitle}</td>
+     <td>${o.customerName}</td>
+     <td style="font-size:12px">${o.customerPhone}</td>
+     <td style="font-size:12px">${o.travelDate}</td>
+     <td style="font-weight:600">${o.totalPrice.toLocaleString()}원</td>
+     <td><span class="status-badge status-${o.status}">${{pending:"待处理",confirmed:"已确认",cancelled:"已取消"}[o.status]}</span></td>
+     <td>${o.status === "pending" ? `<button class="btn-sm btn-confirm" style="color:#fff;border:none;cursor:pointer" onclick="updateStatus('${o.id}','confirmed')">已确认</button> <button class="btn-sm btn-cancel" style="color:#fff;border:none;cursor:pointer" onclick="updateStatus('${o.id}','cancelled')">已取消</button>` : ''}</td></tr>
+   `).join("")}</tbody></table>`;
+ }
+ 
+ async function updateStatus(id, status) {
+   await fetch("/api/admin/reservations", {
+     method: "POST",
+     headers: {"Content-Type":"application/json"},
+     body: JSON.stringify({ id, status })
+   });
+   loadOrders();
+ }
+ loadOrders();
+ </script>
+ </body></html>

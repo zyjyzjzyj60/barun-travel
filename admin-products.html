@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>商品管理 | 巴伦旅游</title>
+<link rel="stylesheet" href="/style.css">
+<style>
+.admin-main{max-width:1200px;margin:0 auto;padding:24px 32px;background:#f8f9fa;min-height:100vh}
+.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.page-header h1{font-size:24px;font-weight:700}
+.btn{display:inline-flex;align-items:center;gap:4px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none}
+.btn-primary{background:#2563eb;color:#fff}
+.btn-danger{background:#ef4444;color:#fff}
+.btn-sm{padding:4px 10px;font-size:12px}
+.btn-outline{background:transparent;border:1px solid #d1d5db;color:#6b7280}
+.tabs{display:flex;gap:4px;margin-bottom:24px}
+.tab{padding:8px 20px;border-radius:8px 8px 0 0;font-size:13px;font-weight:600;cursor:pointer;background:transparent;color:#6b7280}
+.tab.active{background:#fff;border-color:#e5e7eb;color:#2563eb;margin-bottom:-1px}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:16px;width:700px;max-width:95%;max-height:85vh;overflow-y:auto;padding:28px}
+.modal h2{font-size:18px;font-weight:700;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid #e5e7eb}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-grid .full{grid-column:1/-1}
+.form-group{margin-bottom:12px}
+.form-group label{display:block;font-size:12px;font-weight:600;color:#6b7280;margin-bottom:4px}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:8px 12px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;font-family:inherit}
+.form-group textarea{min-height:60px;resize:vertical}
+.form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;padding-top:16px;border-top:1px solid #e5e7eb}
+.product-list{display:flex;flex-direction:column;gap:8px}
+.product-item{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:12px 16px}
+.product-item .info{flex:1;min-width:0}
+.product-item .info .title{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.product-item .info .meta{font-size:11px;color:#9ca3af;margin-top:2px}
+.product-item .info .meta span{margin-right:12px}
+.product-item .actions{display:flex;gap:4px;flex-shrink:0}
+.product-item .badge{font-size:10px;padding:2px 8px;border-radius:10px;background:#fef3c7;color:#92400e;margin-left:8px}
+.badge-featured{background:#d1fae5 !important;color:#065f46 !important}
+.cat-list{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.cat-chip{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #e5e7eb;border-radius:20px;padding:4px 12px;font-size:12px}
+.cat-chip .del{cursor:pointer;color:#9ca3af}
+.cat-chip .del:hover{color:#ef4444}
+.cat-form{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
+.cat-form input{border:1px solid #d1d5db;border-radius:6px;padding:6px 10px;font-size:12px;font-family:inherit}
+.mini-input{width:120px}
+.empty-msg{padding:40px;text-align:center;color:#9ca3af;font-size:14px}
+</style>
+</head><body>
+<div class="admin-layout">
+  <div class="admin-sidebar">
+    <h2>巴伦旅游</h2>
+    <a href="/admin-orders.html">📋 预订管理</a>
+    <a href="/admin-products.html" class="active">📦 商品管理</a>
+    <a href="/" style="margin-top:40px;font-size:12px">🏠 查看网站</a>
+    <a href="#" onclick="logout()" style="font-size:12px">🚪 退出登录</a>
+  </div>
+  <div class="admin-main">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('products')">旅行项目</div>
+      <div class="tab" onclick="switchTab('categories')">分类管理</div>
+    </div>
+    <div id="tab-products" class="tab-content active">
+      <div class="page-header">
+        <h1>旅行项目 <span id="productCount" style="font-size:14px;font-weight:400;color:#9ca3af"></span></h1>
+        <button class="btn btn-primary" onclick="openNewProduct()">+ 新建项目</button>
+      </div>
+      <div id="productList" class="product-list">加载中...</div>
+    </div>
+    <div id="tab-categories" class="tab-content">
+      <div class="page-header"><h1>分类管理</h1></div>
+      <div id="catSection">加载中...</div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="productModal">
+  <div class="modal">
+    <h2 id="modalTitle">新建项目</h2>
+    <div class="form-grid">
+      <div class="full form-group"><label>项目名称</label><input id="f_title" placeholder="例如：【丝绸之路全景】... 11日"></div>
+      <div class="form-group"><label>所属分类</label><select id="f_category"></select></div>
+      <div class="form-group"><label>标签（逗号分隔）</label><input id="f_tags" placeholder="丝绸之路, 西安, 敦煌"></div>
+      <div class="full form-group"><label>说明（韩文）</label><textarea id="f_desc" rows="2"></textarea></div>
+      <div class="form-group"><label>成人价格（원）</label><input id="f_priceAdult" type="number" placeholder="2990000"></div>
+      <div class="form-group"><label>儿童价格（원）</label><input id="f_priceChild" type="number" placeholder="2990000"></div>
+      <div class="form-group"><label>幼儿价格（원）</label><input id="f_priceInfant" type="number" placeholder="400000"></div>
+      <div class="form-group"><label>行程时长</label><input id="f_duration" placeholder="10박 11일"></div>
+      <div class="form-group"><label>航空公司</label><input id="f_airline" placeholder="大韩航空"></div>
+      <div class="form-group"><label>出发地</label><input id="f_departure" value="인천"></div>
+      <div class="form-group"><label>目的地</label><input id="f_destination" placeholder="西安/兰州/敦煌"></div>
+      <div class="full form-group"><label>行程亮点（每行一条）</label><textarea id="f_highlights" rows="3" placeholder="莫高窟（世界文化遗产）
+鸣沙山月牙泉"></textarea></div>
+      <div class="full form-group"><label>费用包含（每行一条）</label><textarea id="f_included" rows="3"></textarea></div>
+      <div class="full form-group"><label>费用不含（每行一条）</label><textarea id="f_excluded" rows="2"></textarea></div>
+      <div class="full form-group"><label>注意事项（每行一条）</label><textarea id="f_notes" rows="2"></textarea></div>
+      <div class="form-group"><label>图片URL（逗号分隔）</label><input id="f_images" placeholder="https://...jpg, https://...jpg"></div>
+      <div class="form-group"><label>路线城市（逗号分隔）</label><input id="f_route" placeholder="西安, 天水, 兰州"></div>
+      <div class="form-group" style="display:flex;align-items:center;gap:8px;padding-top:20px">
+        <input id="f_featured" type="checkbox" style="width:auto">
+        <label style="margin:0;cursor:pointer">设为推荐（首页展示）</label>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-outline" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" id="saveBtn" onclick="saveProduct()">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var editingId = null;
+
+function logout() { sessionStorage.removeItem("admin"); window.location.href = "/admin.html"; }
+if (sessionStorage.getItem("admin") !== "true") window.location.href = "/admin.html";
+
+function switchTab(name) {
+  document.querySelectorAll(".tab").forEach(function(t) { t.classList.remove("active"); });
+  document.querySelectorAll(".tab-content").forEach(function(t) { t.classList.remove("active"); });
+  document.querySelector(".tab[onclick*='" + name + "']").classList.add("active");
+  document.getElementById("tab-" + name).classList.add("active");
+  if (name === 'categories') loadCategories();
+}
+
+function openModal() { document.getElementById("productModal").classList.add("open"); }
+function closeModal() {
+  document.getElementById("productModal").classList.remove("open");
+  editingId = null;
+  document.getElementById("modalTitle").textContent = "新建项目";
+  document.getElementById("saveBtn").textContent = "保存";
+  document.querySelectorAll("#productModal input, #productModal textarea").forEach(function(el) { el.value = ""; });
+  document.getElementById("f_featured").checked = false;
+}
+
+async function loadCategorySelect() {
+  var cats = await (await fetch("/api/categories")).json();
+  var sel = document.getElementById("f_category");
+  sel.innerHTML = cats.map(function(c) { return '<option value="' + c.code + '">' + c.name + '</option>'; }).join("");
+  return cats;
+}
+
+function openNewProduct() {
+  editingId = null;
+  document.getElementById("modalTitle").textContent = "新建项目";
+  document.getElementById("saveBtn").textContent = "保存";
+  document.querySelectorAll("#productModal input, #productModal textarea").forEach(function(el) { el.value = ""; });
+  document.getElementById("f_featured").checked = true;
+  loadCategorySelect().then(function() { openModal(); });
+}
+
+function openEditProduct(p) {
+  editingId = p.id;
+  document.getElementById("modalTitle").textContent = "编辑项目";
+  document.getElementById("saveBtn").textContent = "更新";
+  loadCategorySelect().then(function() {
+    document.getElementById("f_title").value = p.title || "";
+    document.getElementById("f_category").value = p.categoryCode || "";
+    document.getElementById("f_tags").value = (p.tags || []).join(", ");
+    document.getElementById("f_desc").value = p.description || "";
+    document.getElementById("f_priceAdult").value = p.priceAdult || "";
+    document.getElementById("f_priceChild").value = p.priceChild || "";
+    document.getElementById("f_priceInfant").value = p.priceInfant || "";
+    document.getElementById("f_duration").value = p.duration || "";
+    document.getElementById("f_airline").value = p.airline || "";
+    document.getElementById("f_departure").value = p.departure || "";
+    document.getElementById("f_destination").value = p.destination || "";
+    document.getElementById("f_highlights").value = (p.highlights || []).join("\n");
+    document.getElementById("f_included").value = (p.included || []).join("\n");
+    document.getElementById("f_excluded").value = (p.excluded || []).join("\n");
+    document.getElementById("f_notes").value = (p.notes || []).join("\n");
+    document.getElementById("f_images").value = (p.images || []).map(function(i) { return i.url; }).join(", ");
+    document.getElementById("f_route").value = (p.route || []).join(", ");
+    document.getElementById("f_featured").checked = p.featured || false;
+    openModal();
+  });
+}
+
+async function saveProduct() {
+  var title = document.getElementById("f_title").value.trim();
+  if (!title) { alert("请输入项目名称"); return; }
+  var cat = document.getElementById("f_category").value;
+  if (!cat) { alert("请选择分类"); return; }
+
+  var data = {
+    id: editingId,
+    title: title,
+    categoryCode: cat,
+    tags: document.getElementById("f_tags").value.split(",").map(function(s) { return s.trim(); }).filter(Boolean),
+    description: document.getElementById("f_desc").value.trim(),
+    priceAdult: parseInt(document.getElementById("f_priceAdult").value) || 0,
+    priceChild: parseInt(document.getElementById("f_priceChild").value) || 0,
+    priceInfant: parseInt(document.getElementById("f_priceInfant").value) || 0,
+    duration: document.getElementById("f_duration").value.trim(),
+    airline: document.getElementById("f_airline").value.trim(),
+    departure: document.getElementById("f_departure").value.trim(),
+    destination: document.getElementById("f_destination").value.trim(),
+    highlights: document.getElementById("f_highlights").value.split("\n").map(function(s) { return s.trim(); }).filter(Boolean),
+    included: document.getElementById("f_included").value.split("\n").map(function(s) { return s.trim(); }).filter(Boolean),
+    excluded: document.getElementById("f_excluded").value.split("\n").map(function(s) { return s.trim(); }).filter(Boolean),
+    notes: document.getElementById("f_notes").value.split("\n").map(function(s) { return s.trim(); }).filter(Boolean),
+    featured: document.getElementById("f_featured").checked
+  };
+
+  var imgStr = document.getElementById("f_images").value.trim();
+  if (imgStr) {
+    data.images = imgStr.split(",").map(function(s) { return s.trim(); }).filter(Boolean).map(function(url) {
+      return { url: url, alt: "景点图片" };
+    });
+  }
+
+  var routeStr = document.getElementById("f_route").value.trim();
+  if (routeStr) {
+    data.route = routeStr.split(",").map(function(s) { return s.trim(); }).filter(Boolean);
+  }
+
+  var endpoint = editingId ? "/api/admin/products/update" : "/api/admin/products/create";
+  if (editingId) data.id = editingId;
+
+  var res = await fetch(endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+  var result = await res.json();
+  if (result.success) {
+    closeModal();
+    loadProducts();
+  } else {
+    alert("保存失败，请重试");
+  }
+}
+
+async function loadProducts() {
+  var prods = await (await fetch("/api/products")).json();
+  var cats = await (await fetch("/api/categories")).json();
+  var catMap = {};
+  cats.forEach(function(c) { catMap[c.code] = c.name; });
+
+  document.getElementById("productCount").textContent = "（共 " + prods.length + " 个）";
+  if (prods.length === 0) {
+    document.getElementById("productList").innerHTML = "<div class='empty-msg'>暂无项目，点击右上角新建</div>";
+    return;
+  }
+
+  document.getElementById("productList").innerHTML = prods.map(function(p) {
+    var badge = p.featured ? '<span class="badge badge-featured">推荐</span>' : '';
+    var json = JSON.stringify(p).replace(/"/g, "&quot;");
+    return '<div class="product-item">' +
+      '<div class="info"><div class="title">' + p.title + badge + '</div>' +
+      '<div class="meta"><span>' + (catMap[p.categoryCode] || p.categoryCode) + '</span><span>' + (p.duration || "") + '</span><span>' + (p.priceAdult ? p.priceAdult.toLocaleString() + "원" : "") + '</span></div></div>' +
+      '<div class="actions"><button class="btn btn-sm btn-primary" onclick="openEditProduct(' + json + ')">编辑</button>' +
+      '<button class="btn btn-sm btn-danger" onclick="deleteProduct(' + p.id + ')">删除</button></div></div>';
+  }).join("");
+}
+
+async function deleteProduct(id) {
+  if (!confirm("确定要删除此项目？")) return;
+  var res = await fetch("/api/admin/products/delete", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id: id })
+  });
+  var result = await res.json();
+  if (result.success) loadProducts();
+}
+
+async function loadCategories() {
+  var cats = await (await fetch("/api/categories")).json();
+  var html = '<div class="cat-list">' +
+    cats.map(function(c) { return '<div class="cat-chip">' + c.name + ' <span class="del" onclick="deleteCategory(\'' + c.code + '\')">✕</span></div>'; }).join("") +
+    '</div>' +
+    '<div class="cat-form">' +
+    '<input class="mini-input" id="newCatCode" placeholder="代码" style="width:100px">' +
+    '<input class="mini-input" id="newCatName" placeholder="名称" style="width:120px">' +
+    '<input class="mini-input" id="newCatDesc" placeholder="描述" style="width:160px">' +
+    '<button class="btn btn-primary" onclick="addCategory()">添加</button></div>';
+  document.getElementById("catSection").innerHTML = html;
+}
+
+async function addCategory() {
+  var code = document.getElementById("newCatCode").value.trim();
+  var name = document.getElementById("newCatName").value.trim();
+  if (!code || !name) { alert("请输入代码和名称"); return; }
+  var desc = document.getElementById("newCatDesc").value.trim() || name;
+  var res = await fetch("/api/admin/categories/create", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ code: code, name: name, description: desc })
+  });
+  var result = await res.json();
+  if (result.success) {
+    document.getElementById("newCatCode").value = "";
+    document.getElementById("newCatName").value = "";
+    document.getElementById("newCatDesc").value = "";
+    loadCategories();
+  }
+}
+
+async function deleteCategory(code) {
+  if (!confirm("确定要删除分类「" + code + "」？")) return;
+  var res = await fetch("/api/admin/categories/delete", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ code: code })
+  });
+  var result = await res.json();
+  if (result.success) loadCategories();
+}
+
+loadProducts();
+</script>
+</body></html>

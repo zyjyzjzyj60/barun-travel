@@ -1,0 +1,118 @@
+ <!DOCTYPE html>
+ <html lang="ko"><head>
+ <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+ <title>支付 | 巴伦旅游</title>
+ <link rel="stylesheet" href="/style.css">
+ <style>
+ .pay-methods { display: flex; flex-direction: column; gap: 10px; margin: 16px 0; }
+ .pay-method { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 2px solid #e5e7eb; border-radius: 12px; cursor: pointer; transition: all .2s; }
+ .pay-method:hover { border-color: #93c5fd; background: #eff6ff; }
+ .pay-method.selected { border-color: #2563eb; background: #eff6ff; }
+ .pay-method .icon { font-size: 24px; }
+ .pay-method .info { flex: 1; }
+ .pay-method .name { font-weight: 700; font-size: 14px; }
+ .pay-method .desc { font-size: 11px; color: #9ca3af; }
+ .pay-method .check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #d1d5db; display: flex; align-items: center; justify-content: center; color: #fff; }
+ .pay-method.selected .check { background: #2563eb; border-color: #2563eb; }
+ .pay-summary { background: #f8f9fa; border-radius: 12px; padding: 16px; margin: 16px 0; }
+ .pay-summary .row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; }
+ .pay-summary .total { border-top: 1px solid #e5e7eb; padding-top: 10px; margin-top: 6px; font-weight: 700; font-size: 16px; color: #2563eb; }
+ .vbank-info { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 16px; margin: 16px 0; text-align: center; }
+ .vbank-info .bank { font-size: 18px; font-weight: 700; color: #059669; margin-bottom: 4px; }
+ .vbank-info .account { font-size: 14px; color: #6b7280; }
+ .vbank-info .note { font-size: 11px; color: #9ca3af; margin-top: 8px; }
+ .processing { text-align: center; padding: 40px 20px; }
+ .processing .spinner { display: inline-block; width: 48px; height: 48px; border: 4px solid #e5e7eb; border-top-color: #2563eb; border-radius: 50%; animation: spin .8s linear infinite; margin-bottom: 16px; }
+ @keyframes spin { to { transform: rotate(360deg); } }
+ </style>
+ </head><body>
+ <header class="header"><div class="container header-inner"><a href="/" class="logo">巴伦旅游</a><nav class="nav"><a href="/">首页</a><a href="/admin.html">管理</a></nav></div></header>
+ <div class="container" style="max-width:640px" id="app">
+   <div id="content">加载中...</div>
+ </div>
+ <footer class="footer" style="margin-top:40px"><div class="container"><div class="footer-bottom">Copyright @ (주)巴伦旅游 All Rights Reserved.</div></div></footer>
+ <script>
+ const qs = new URLSearchParams(window.location.search);
+ const reservationId = qs.get("reservationId");
+ const total = parseInt(qs.get("total")) || 0;
+ const title = qs.get("title") || "";
+ let selectedMethod = "card";
+ let isPaid = false;
+ 
+ function renderPayment() {
+   const methods = [
+     { id: "card", icon: "💳", name: "信用卡支付", desc: "信用卡/借记卡 (VISA、Master等)" },
+     { id: "vbank", icon: "🏦", name: "银行转账", desc: "국민은행 037601-04-107494 (주)巴伦旅游" },
+     { id: "kakao", icon: "💬", name: "KakaoPay", desc: "KakaoTalk快捷支付" },
+     { id: "toss", icon: "📱", name: "Toss支付", desc: "Toss App快捷支付" }
+   ];
+   document.getElementById("content").innerHTML = `
+     <h1 style="font-size:24px;font-weight:700;margin:24px 0 4px">支付</h1>
+     <p style="font-size:14px;color:#9ca3af;margin-bottom:4px">预订编号: ${reservationId}</p>
+     <p style="font-size:13px;color:#9ca3af;margin-bottom:20px">${title.substring(0, 40)}...</p>
+ 
+     <div class="pay-summary">
+       <div class="row"><span>商品金额</span><span>${total.toLocaleString()}원</span></div>
+       <div class="row"><span>优惠</span><span>0원</span></div>
+       <div class="row total"><span>最终支付金额</span><span>${total.toLocaleString()}원</span></div>
+     </div>
+ 
+     <h3 style="font-size:16px;font-weight:700;margin-bottom:12px">选择支付方式</h3>
+     <div class="pay-methods">
+       ${methods.map(m => `
+         <div class="pay-method ${selectedMethod === m.id ? 'selected' : ''}" onclick="selectMethod('${m.id}')">
+           <span class="icon">${m.icon}</span>
+           <div class="info"><div class="name">${m.name}</div><div class="desc">${m.desc}</div></div>
+           <div class="check">${selectedMethod === m.id ? '✓' : ''}</div>
+         </div>
+       `).join("")}
+     </div>
+ 
+     <div class="vbank-info" id="vbankInfo" style="display:${selectedMethod === 'vbank' ? 'block' : 'none'}">
+       <p style="font-size:14px;margin-bottom:8px">↓ 请转账至以下账户</p>
+       <div class="bank">국민은행 037601-04-107494</div>
+       <div class="account">(주)巴伦旅游</div>
+       <div class="note">汇款人姓名需与预约人姓名一致。</div>
+     </div>
+ 
+     <button class="btn-book" onclick="processPayment()" ${isPaid ? 'disabled' : ''}>
+       ${isPaid ? '支付完成' : total.toLocaleString() + '원 支付'}
+     </button>
+     <p style="text-align:center;font-size:10px;color:#9ca3af;margin-top:8px">
+       ※ ${selectedMethod === 'vbank' ? '确认到账后预订即确认。' : '支付完成 후 예약이 已确认됩니다.'}
+       <br>테스트 환경에서는 즉시 支付完成 처리됩니다.
+     </p>`;
+ }
+ 
+ function selectMethod(id) {
+   selectedMethod = id;
+   renderPayment();
+ }
+ 
+ async function processPayment() {
+   document.getElementById("content").innerHTML = '<div class="processing"><div class="spinner"></div><h3>支付处理中...</h3><p style="color:#9ca3af;font-size:13px">正在连接支付网关...</p></div>';
+   // Simulate payment processing
+   const select = selectedMethod;
+   const payResult = await new Promise(resolve => setTimeout(() => resolve({ success: true, method: select, tid: "T" + Date.now() }), 2000));
+   if (payResult.success) {
+     isPaid = true;
+     document.getElementById("content").innerHTML = `
+       <div class="reservation-confirm">
+         <div class="emoji">✅</div>
+         <h1>支付已完成！</h1>
+         <p style="color:#6b7280;margin-bottom:8px">预订编号: <strong>${reservationId}</strong></p>
+         <p style="color:#6b7280;margin-bottom:4px">支付金额: <strong>${total.toLocaleString()}원</strong></p>
+         <p style="color:#6b7280;margin-bottom:4px">支付方式: ${payResult.method === 'card' ? '信用卡支付' : payResult.method === 'vbank' ? '银行转账' : payResult.method === 'kakao' ? 'KakaoPay' : 'Toss支付'}</p>
+         <p style="color:#9ca3af;font-size:12px;margin-top:12px">交易编号: ${payResult.tid}</p>
+         <div style="margin-top:24px;display:flex;gap:8px;justify-content:center">
+           <a href="/" class="btn-book" style="display:inline-block;width:auto;padding:12px 24px">首页으로 가기</a>
+           <a href="/admin-orders.html" class="btn-book" style="display:inline-block;width:auto;padding:12px 24px;background:#059669">确认预订</a>
+         </div>
+       </div>`;
+   } else {
+     document.getElementById("content").innerHTML = '<div class="reservation-confirm"><div class="emoji">❌</div><h1>支付失败</h1><p>请重试。</p><button class="btn-book" onclick="renderPayment()">重试</button></div>';
+   }
+ }
+ renderPayment();
+ </script>
+ </body></html>

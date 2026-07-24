@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>상품 상세 | 巴伦旅游</title>
+<link rel="stylesheet" href="/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;800;900&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+/* ===== Premium Product Detail Page ===== */
+:root {
+  --primary: #1a365d;
+  --primary-light: #2b6cb0;
+  --accent: #e8a838;
+  --accent-light: #f6d365;
+  --surface: #ffffff;
+  --bg: #f8f7f4;
+  --text: #1a202c;
+  --text-muted: #718096;
+  --border: #e2e8f0;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.06);
+  --shadow-md: 0 4px 20px rgba(0,0,0,.08);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,.12);
+  --radius: 12px;
+  --radius-lg: 20px;
+}
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; }
+.pd-breadcrumb { padding: 12px 0; font-size: 13px; color: var(--text-muted); max-width: 1360px; margin: 0 auto; padding-left: 24px; padding-right: 24px; }
+.pd-breadcrumb a { color: var(--text-muted); text-decoration: none; transition: color .2s; }
+.pd-breadcrumb a:hover { color: var(--primary); }
+.pd-breadcrumb .sep { margin: 0 8px; color: #cbd5e0; }
+.pd-hero { position: relative; height: 75vh; min-height: 480px; background-size: cover; background-position: center; display: flex; align-items: flex-end; overflow: hidden; }
+.pd-hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.15) 0%, rgba(0,0,0,.7) 50%, rgba(0,0,0,.85) 100%); z-index: 1; }
+.pd-hero-scrim { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(26,54,93,.6) 0%, transparent 50%); z-index: 1; }
+.pd-hero-content { position: relative; z-index: 2; padding: 60px 24px 48px; max-width: 1360px; margin: 0 auto; width: 100%; }
+.pd-hero-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.pd-hero-tag { font-size: 11px; font-weight: 500; padding: 4px 12px; border-radius: 20px; background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.2); backdrop-filter: blur(4px); letter-spacing: .3px; }
+.pd-hero-tag.silk { background: rgba(232,168,56,.25); border-color: rgba(232,168,56,.4); }
+.pd-hero-tag.premium { background: rgba(255,255,255,.2); border-color: rgba(255,255,255,.3); }
+.pd-hero-title { font-size: clamp(28px, 4vw, 48px); font-weight: 900; line-height: 1.2; color: #fff; text-shadow: 0 2px 20px rgba(0,0,0,.3); margin-bottom: 16px; max-width: 800px; }
+.pd-hero-meta { display: flex; flex-wrap: wrap; gap: 16px 24px; color: rgba(255,255,255,.85); font-size: 14px; align-items: center; }
+.pd-hero-meta-item { display: flex; align-items: center; gap: 6px; }
+.pd-hero-meta-item .icon { font-size: 16px; opacity: .8; }
+.pd-hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(232,168,56,.25); border: 1px solid rgba(232,168,56,.4); padding: 6px 14px; border-radius: 20px; font-size: 12px; color: #f6d365; font-weight: 600; backdrop-filter: blur(4px); }
+.pd-section-nav { position: sticky; top: 0; z-index: 40; background: rgba(255,255,255,.92); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); padding: 0 24px; display: none; }
+.pd-section-nav-inner { max-width: 1360px; margin: 0 auto; display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+.pd-section-nav-inner::-webkit-scrollbar { display: none; }
+.pd-section-nav a { display: flex; align-items: center; gap: 6px; padding: 14px 18px; font-size: 13px; font-weight: 500; color: var(--text-muted); text-decoration: none; white-space: nowrap; border-bottom: 2px solid transparent; transition: all .2s; flex-shrink: 0; }
+.pd-section-nav a:hover { color: var(--text); background: #f7fafc; }
+.pd-section-nav a.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 700; }
+.pd-layout { max-width: 1360px; margin: 0 auto; padding: 0 24px; display: grid; grid-template-columns: 1fr 380px; gap: 40px; padding-top: 32px; padding-bottom: 64px; }
+@media (max-width: 1024px) { .pd-layout { grid-template-columns: 1fr; } }
+.pd-main { min-width: 0; }
+.pd-section { margin-bottom: 48px; scroll-margin-top: 72px; }
+.pd-section:last-child { margin-bottom: 0; }
+.pd-section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid var(--primary); }
+.pd-section-header .icon { font-size: 24px; }
+.pd-section-title { font-size: 22px; font-weight: 800; color: var(--text); letter-spacing: -.3px; }
+.pd-section-sub { font-size: 13px; color: var(--text-muted); margin-left: auto; }
+.pd-desc-card { background: var(--surface); border-radius: var(--radius-lg); padding: 32px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
+.pd-desc-card p { font-size: 15px; line-height: 1.9; color: #4a5568; }
+.pd-route { background: var(--surface); border-radius: var(--radius-lg); padding: 32px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); overflow-x: auto; }
+.pd-route-track { display: flex; align-items: center; min-width: max-content; padding: 8px 0; }
+.pd-route-node { display: flex; flex-direction: column; align-items: center; position: relative; }
+.pd-route-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--primary-light); border: 3px solid #bee3f8; margin-bottom: 8px; position: relative; transition: all .3s; }
+.pd-route-node:hover .pd-route-dot { transform: scale(1.3); box-shadow: 0 0 0 4px rgba(43,108,176,.15); }
+.pd-route-dot.start { background: #2f855a; border-color: #c6f6d5; width: 16px; height: 16px; }
+.pd-route-dot.end { background: #c53030; border-color: #fed7d7; width: 16px; height: 16px; }
+.pd-route-city { font-size: 13px; font-weight: 600; text-align: center; white-space: nowrap; color: var(--text); transition: color .2s; }
+.pd-route-node:hover .pd-route-city { color: var(--primary-light); }
+.pd-route-label { font-size: 10px; color: var(--text-muted); margin-top: 2px; letter-spacing: .5px; }
+.pd-route-arrow { width: 40px; height: 2px; background: linear-gradient(90deg, var(--border), var(--primary-light)); flex-shrink: 0; margin-bottom: 20px; position: relative; }
+.pd-route-arrow::after { content: '›'; position: absolute; right: -4px; top: -9px; font-size: 18px; color: var(--primary-light); font-weight: 700; }
+.pd-timeline { position: relative; }
+.pd-timeline::before { content: ''; position: absolute; left: 52px; top: 0; bottom: 0; width: 2px; background: linear-gradient(180deg, var(--primary-light), var(--accent)); opacity: .3; }
+.pd-day-card { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm); margin-bottom: 20px; overflow: hidden; transition: all .3s; cursor: pointer; }
+.pd-day-card:hover { box-shadow: var(--shadow-md); }
+.pd-day-card.expanded { box-shadow: var(--shadow-md); border-color: var(--primary-light); }
+.pd-day-header { display: flex; align-items: flex-start; gap: 16px; padding: 20px 24px; position: relative; }
+.pd-day-marker { width: 48px; height: 48px; min-width: 48px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; font-weight: 800; position: relative; z-index: 2; box-shadow: 0 2px 8px rgba(26,54,93,.3); }
+.pd-day-icon { font-size: 20px; margin-right: 4px; }
+.pd-day-info { flex: 1; min-width: 0; }
+.pd-day-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.pd-day-meta { display: flex; flex-wrap: wrap; gap: 12px 20px; font-size: 12px; color: var(--text-muted); }
+.pd-day-meta span { display: flex; align-items: center; gap: 4px; }
+.pd-day-expand { width: 32px; height: 32px; min-width: 32px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--text-muted); transition: all .3s; cursor: pointer; }
+.pd-day-card.expanded .pd-day-expand { transform: rotate(180deg); color: var(--primary); border-color: var(--primary-light); }
+.pd-day-body { max-height: 0; overflow: hidden; transition: max-height .5s ease, padding .3s ease; }
+.pd-day-card.expanded .pd-day-body { max-height: 2000px; padding: 0 24px 24px; }
+.pd-day-images { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+.pd-day-images img { width: 100%; height: 120px; object-fit: cover; border-radius: 10px; transition: transform .3s; cursor: pointer; }
+.pd-day-images img:hover { transform: scale(1.03); }
+.pd-day-images img:first-child { grid-column: 1 / -1; height: 180px; }
+.pd-day-activities { list-style: none; padding: 0; margin: 0; }
+.pd-day-activities li { font-size: 13px; color: #4a5568; padding: 6px 0 6px 24px; position: relative; line-height: 1.6; }
+.pd-day-activities li::before { content: '✦'; position: absolute; left: 0; color: var(--accent); font-size: 10px; }
+.pd-day-hotel { margin-top: 12px; display: inline-flex; align-items: center; gap: 6px; background: #f0fff4; border: 1px solid #c6f6d5; padding: 6px 14px; border-radius: 8px; font-size: 12px; color: #276749; font-weight: 500; }
+.pd-day-transport { display: inline-flex; align-items: center; gap: 6px; background: #ebf8ff; border: 1px solid #bee3f8; padding: 6px 14px; border-radius: 8px; font-size: 12px; color: #2b6cb0; font-weight: 500; }
+.pd-day-meals { display: inline-flex; align-items: center; gap: 6px; background: #fffaf0; border: 1px solid #feebc8; padding: 6px 14px; border-radius: 8px; font-size: 12px; color: #c05621; font-weight: 500; }
+.pd-day-detail-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.pd-highlights { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+@media (max-width: 600px) { .pd-highlights { grid-template-columns: 1fr; } }
+.pd-highlight-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; display: flex; gap: 14px; align-items: flex-start; transition: all .3s; box-shadow: var(--shadow-sm); }
+.pd-highlight-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--accent); }
+.pd-highlight-icon { width: 40px; height: 40px; min-width: 40px; background: linear-gradient(135deg, #f6d365, #fda085); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.pd-highlight-text { font-size: 13px; color: #4a5568; line-height: 1.6; font-weight: 500; }
+.pd-fees { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 600px) { .pd-fees { grid-template-columns: 1fr; } }
+.pd-fee-box { background: var(--surface); border-radius: var(--radius-lg); padding: 24px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+.pd-fee-box.inc { border-top: 4px solid #48bb78; }
+.pd-fee-box.exc { border-top: 4px solid #fc8181; }
+.pd-fee-box h3 { font-size: 15px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.pd-fee-box ul { list-style: none; padding: 0; margin: 0; }
+.pd-fee-box li { font-size: 13px; color: #4a5568; padding: 5px 0; display: flex; align-items: center; gap: 8px; }
+.pd-fee-box.inc li::before { content: '✓'; color: #48bb78; font-weight: 700; }
+.pd-fee-box.exc li::before { content: '✗'; color: #fc8181; font-weight: 700; }
+.pd-notes { background: linear-gradient(135deg, #fffff0, #fefcbf); border: 1px solid #f6e05e; border-radius: var(--radius-lg); padding: 24px 28px; box-shadow: var(--shadow-sm); }
+.pd-notes li { font-size: 13px; color: #744210; padding: 7px 0 7px 28px; position: relative; line-height: 1.5; }
+.pd-notes li::before { content: '⚠'; position: absolute; left: 0; font-size: 14px; }
+.pd-gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+@media (max-width: 600px) { .pd-gallery { grid-template-columns: repeat(2, 1fr); } }
+.pd-gallery-item { border-radius: var(--radius); overflow: hidden; cursor: pointer; position: relative; }
+.pd-gallery-item:nth-child(1) { grid-column: 1 / -1; aspect-ratio: 16/7; }
+.pd-gallery-item:not(:nth-child(1)) { aspect-ratio: 1; }
+.pd-gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; display: block; }
+.pd-gallery-item:hover img { transform: scale(1.08); }
+.pd-lightbox { position: fixed; inset: 0; z-index: 999; background: rgba(0,0,0,.95); display: none; align-items: center; justify-content: center; padding: 40px; }
+.pd-lightbox.active { display: flex; }
+.pd-lightbox img { max-width: 90vw; max-height: 85vh; object-fit: contain; border-radius: 8px; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+.pd-lightbox-close { position: absolute; top: 24px; right: 24px; width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,.1); border: none; color: #fff; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .2s; }
+.pd-lightbox-close:hover { background: rgba(255,255,255,.2); }
+.pd-lightbox-prev, .pd-lightbox-next { position: absolute; top: 50%; transform: translateY(-50%); width: 52px; height: 52px; border-radius: 50%; background: rgba(255,255,255,.1); border: none; color: #fff; font-size: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .2s; }
+.pd-lightbox-prev:hover, .pd-lightbox-next:hover { background: rgba(255,255,255,.2); }
+.pd-lightbox-prev { left: 24px; }
+.pd-lightbox-next { right: 24px; }
+.pd-lightbox-counter { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,.6); font-size: 14px; letter-spacing: 1px; }
+.pd-sidebar-inner { position: sticky; top: 80px; }
+.pd-sidebar-card { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-lg); overflow: hidden; }
+.pd-sidebar-header { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: #fff; padding: 24px 24px 20px; }
+.pd-sidebar-label { font-size: 12px; opacity: .7; margin-bottom: 4px; letter-spacing: .5px; }
+.pd-sidebar-price-row { display: flex; align-items: baseline; gap: 6px; }
+.pd-sidebar-price { font-size: 32px; font-weight: 900; }
+.pd-sidebar-price-unit { font-size: 16px; font-weight: 500; opacity: .8; }
+.pd-sidebar-duration { font-size: 13px; opacity: .7; margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+.pd-sidebar-body { padding: 20px 24px; }
+.pd-calendar { margin-bottom: 20px; }
+.pd-calendar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.pd-calendar-nav { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--text); transition: all .2s; }
+.pd-calendar-nav:hover { border-color: var(--primary-light); color: var(--primary); }
+.pd-calendar-title { font-size: 14px; font-weight: 700; }
+.pd-calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 4px; }
+.pd-calendar-weekday { text-align: center; font-size: 11px; color: var(--text-muted); padding: 6px 0; font-weight: 600; }
+.pd-calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.pd-calendar-day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--text); cursor: pointer; transition: all .15s; position: relative; border: 1px solid transparent; }
+.pd-calendar-day:hover { background: #ebf8ff; }
+.pd-calendar-day.other-month { color: #cbd5e0; pointer-events: none; }
+.pd-calendar-day.unavailable { color: #e2e8f0; pointer-events: none; text-decoration: line-through; }
+.pd-calendar-day.selected { background: var(--primary-light); color: #fff; border-color: var(--primary); font-weight: 700; box-shadow: 0 2px 8px rgba(43,108,176,.3); }
+.pd-calendar-day.selected:hover { background: var(--primary); }
+.pd-calendar-day.today { border-color: var(--accent); border-style: dashed; }
+.pd-calendar-price { font-size: 8px; color: var(--text-muted); margin-top: 1px; font-weight: 400; letter-spacing: -.3px; }
+.pd-calendar-day.selected .pd-calendar-price { color: rgba(255,255,255,.7); }
+.pd-guest-section { margin-bottom: 16px; }
+.pd-guest-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+.pd-guest-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f7fafc; }
+.pd-guest-label { font-size: 13px; color: #4a5568; }
+.pd-guest-label small { color: var(--text-muted); font-size: 11px; margin-left: 4px; }
+.pd-guest-counter { display: flex; align-items: center; gap: 8px; }
+.pd-guest-btn { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; color: var(--text); transition: all .15s; }
+.pd-guest-btn:hover { border-color: var(--primary-light); color: var(--primary); background: #ebf8ff; }
+.pd-guest-btn:active { transform: scale(.92); }
+.pd-guest-val { min-width: 24px; text-align: center; font-size: 15px; font-weight: 700; }
+.pd-sidebar-total { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; margin: 8px 0; border-top: 2px solid var(--accent); }
+.pd-total-label { font-size: 15px; font-weight: 700; color: var(--text); }
+.pd-total-price { font-size: 28px; font-weight: 900; color: var(--primary); }
+.pd-total-price small { font-size: 14px; font-weight: 500; }
+.pd-book-btn { display: block; width: 100%; padding: 16px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: #fff; border: none; border-radius: var(--radius); font-size: 16px; font-weight: 700; cursor: pointer; text-align: center; transition: all .2s; letter-spacing: .3px; }
+.pd-book-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(26,54,93,.3); }
+.pd-book-btn:active { transform: translateY(0); }
+.pd-sidebar-footnote { text-align: center; font-size: 10px; color: var(--text-muted); margin-top: 12px; line-height: 1.5; }
+.pd-reveal { opacity: 0; transform: translateY(24px); transition: all .6s cubic-bezier(.16,1,.3,1); }
+.pd-reveal.visible { opacity: 1; transform: translateY(0); }
+.pd-empty { text-align: center; padding: 80px 20px; color: var(--text-muted); }
+.pd-empty .icon { font-size: 64px; margin-bottom: 16px; }
+.pd-empty h2 { font-size: 22px; margin-bottom: 8px; color: var(--text); }
+.pd-empty p { font-size: 14px; margin-bottom: 20px; }
+.pd-empty .btn { display: inline-block; padding: 12px 28px; background: var(--primary); color: #fff; border-radius: 30px; font-size: 14px; font-weight: 600; text-decoration: none; }
+.pd-loading { text-align: center; padding: 120px 20px; color: var(--text-muted); }
+.pd-loading .spinner { width: 48px; height: 48px; border: 4px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: pd-spin .8s linear infinite; margin: 0 auto 16px; }
+@keyframes pd-spin { to { transform: rotate(360deg); } }
+@media (max-width: 1024px) { .pd-hero { height: 60vh; min-height: 360px; } .pd-sidebar-inner { position: static; } .pd-sidebar-card { box-shadow: var(--shadow-md); } }
+@media (max-width: 768px) { .pd-hero { height: 50vh; min-height: 320px; } .pd-hero-content { padding: 40px 16px 32px; } .pd-layout { padding: 16px; gap: 24px; } .pd-section { margin-bottom: 32px; } .pd-day-header { padding: 16px; } .pd-day-images { grid-template-columns: repeat(2, 1fr); } .pd-day-images img:first-child { height: 140px; } .pd-highlights { grid-template-columns: 1fr; } .pd-fees { grid-template-columns: 1fr; } .pd-gallery { grid-template-columns: repeat(2, 1fr); } .pd-gallery-item:nth-child(1) { grid-column: 1 / -1; aspect-ratio: 16/9; } .pd-section-nav { padding: 0 16px; } .pd-section-nav a { padding: 12px 14px; font-size: 12px; } .pd-lightbox { padding: 16px; } .pd-lightbox-prev { left: 8px; } .pd-lightbox-next { right: 8px; } }
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="container header-inner">
+    <a href="/" class="logo">巴伦旅游 <span>| 好产品、好价格、好旅游</span></a>
+    <nav class="nav">
+      <a href="/">首页</a>
+      <a href="/category/XIAN">西安</a>
+      <a href="/category/SILKROAD">丝绸之路</a>
+      <a href="/admin.html">管理</a>
+    </nav>
+    <div class="auth-btns"><a href="/admin.html">登录</a><a href="/admin.html" class="btn-sm btn-primary">注册</a></div>
+  </div>
+</header>
+<div id="pd-app">
+  <div class="pd-breadcrumb" id="pd-breadcrumb"></div>
+  <div class="pd-hero" id="pd-hero">
+    <div class="pd-hero-scrim"></div>
+    <div class="pd-hero-content">
+      <div class="pd-hero-tags" id="pd-hero-tags"></div>
+      <h1 class="pd-hero-title" id="pd-hero-title"></h1>
+      <div class="pd-hero-meta" id="pd-hero-meta"></div>
+    </div>
+  </div>
+  <nav class="pd-section-nav" id="pd-section-nav">
+    <div class="pd-section-nav-inner" id="pd-section-nav-inner"></div>
+  </nav>
+  <div class="pd-layout">
+    <div class="pd-main" id="pd-main">
+      <section class="pd-section pd-reveal" id="sec-desc" data-nav="行程介绍">
+        <div class="pd-section-header"><span class="icon">📋</span><h2 class="pd-section-title">行程介绍</h2></div>
+        <div class="pd-desc-card"><p id="pd-desc-text"></p></div>
+      </section>
+      <section class="pd-section pd-reveal" id="sec-route" data-nav="路线概览">
+        <div class="pd-section-header"><span class="icon">🗺️</span><h2 class="pd-section-title">路线概览</h2><span class="pd-section-sub" id="pd-route-sub"></span></div>
+        <div class="pd-route" id="pd-route"></div>
+      </section>
+      <section class="pd-section pd-reveal" id="sec-itinerary" data-nav="详细行程">
+        <div class="pd-section-header"><span class="icon">📅</span><h2 class="pd-section-title">详细行程</h2><span class="pd-section-sub" id="pd-itinerary-sub"></span></div>
+        <div class="pd-timeline" id="pd-timeline"></div>
+      </section>
+      <section class="pd-section pd-reveal" id="sec-highlights" data-nav="行程亮点">
+        <div class="pd-section-header"><span class="icon">⭐</span><h2 class="pd-section-title">行程亮点</h2></div>
+        <div class="pd-highlights" id="pd-highlights"></div>
+      </section>
+      <section class="pd-section pd-reveal" id="sec-fees" data-nav="费用说明">
+        <div class="pd-section-header"><span class="icon">💰</span><h2 class="pd-section-title">费用说明</h2></div>
+        <div class="pd-fees" id="pd-fees"></div>
+      </section>
+      <section class="pd-section pd-reveal" id="sec-notes" data-nav="注意事项">
+        <div class="pd-section-header"><span class="icon">⚠️</span><h2 class="pd-section-title">注意事项</h2></div>
+        <ul class="pd-notes" id="pd-notes"></ul>
+      </section>
+      <section class="pd-section pd-reveal" id="sec-gallery" data-nav="图片集">
+        <div class="pd-section-header"><span class="icon">🖼️</span><h2 class="pd-section-title">图片集</h2><span class="pd-section-sub" id="pd-gallery-sub"></span></div>
+        <div class="pd-gallery" id="pd-gallery"></div>
+      </section>
+    </div>
+    <div class="pd-sidebar">
+      <div class="pd-sidebar-inner">
+        <div class="pd-sidebar-card">
+          <div class="pd-sidebar-header">
+            <div class="pd-sidebar-label">成人1人基准</div>
+            <div class="pd-sidebar-price-row">
+              <span class="pd-sidebar-price" id="pd-sidebar-price">—</span>
+              <span class="pd-sidebar-price-unit">원</span>
+            </div>
+            <div class="pd-sidebar-duration"><span>📅</span><span id="pd-sidebar-duration">—</span></div>
+          </div>
+          <div class="pd-sidebar-body">
+            <div class="pd-calendar" id="pd-calendar"></div>
+            <div class="pd-guest-section">
+              <div class="pd-guest-title">预订人数</div>
+              <div class="pd-guest-row"><span class="pd-guest-label">成人 <small>(≥1)</small></span><div class="pd-guest-counter"><button class="pd-guest-btn" onclick="pdGuestChange('adult',-1)">−</button><span class="pd-guest-val" id="pd-guest-adult">1</span><button class="pd-guest-btn" onclick="pdGuestChange('adult',1)">+</button></div></div>
+              <div class="pd-guest-row"><span class="pd-guest-label">儿童 <small>(2-12岁)</small></span><div class="pd-guest-counter"><button class="pd-guest-btn" onclick="pdGuestChange('child',-1)">−</button><span class="pd-guest-val" id="pd-guest-child">0</span><button class="pd-guest-btn" onclick="pdGuestChange('child',1)">+</button></div></div>
+              <div class="pd-guest-row"><span class="pd-guest-label">幼儿 <small>(0-2岁)</small></span><div class="pd-guest-counter"><button class="pd-guest-btn" onclick="pdGuestChange('infant',-1)">−</button><span class="pd-guest-val" id="pd-guest-infant">0</span><button class="pd-guest-btn" onclick="pdGuestChange('infant',1)">+</button></div></div>
+            </div>
+            <div class="pd-sidebar-total"><span class="pd-total-label">总金额</span><span class="pd-total-price"><span id="pd-total-price">—</span><small>원</small></span></div>
+            <button class="pd-book-btn" id="pd-book-btn" onclick="pdGoReservation()">立即预订</button>
+            <p class="pd-sidebar-footnote">※ 提交预订后，客服将联系您确认详情<br>订金 ₅₀만원 / 余款出发前15天结清</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="pd-lightbox" id="pd-lightbox" onclick="pdLightboxClose()">
+  <button class="pd-lightbox-close" onclick="pdLightboxClose()">✕</button>
+  <button class="pd-lightbox-prev" onclick="pdLightboxNav(-1)">‹</button>
+  <img id="pd-lightbox-img" src="" alt="">
+  <button class="pd-lightbox-next" onclick="pdLightboxNav(1)">›</button>
+  <span class="pd-lightbox-counter" id="pd-lightbox-counter"></span>
+</div>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div><h3>巴伦旅游</h3><p>好产品、好价格、好旅游<br>고객님의 믿음에 보답하는 정직한 여행사입니다.</p></div>
+      <div><h3>客服中心</h3><p class="phone">02-6949-0075</p><p>工作日 上午9点 ~ 下午6点<br>周末/节假日休息</p></div>
+      <div><h3>公司信息</h3><p>상호: (주)巴伦旅游<br>代表: 赵天有<br>地址: 首尔特别市九老区Digital路233号, Ga栋201号</p></div>
+    </div>
+    <div class="footer-bottom">Copyright @ (주)巴伦旅游 All Rights Reserved.</div>
+  </div>
+</footer>
+<script>
+var SCENIC_IMG_DB = {
+  '兵马俑':'https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/51714-Terracota-Army.jpg/800px-51714-Terracota-Army.jpg',
+  '华清池':'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Huaqingchi_1.JPG/800px-Huaqingchi_1.JPG',
+  '大雁塔':'https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Giant_Wild_Goose_Pagoda.jpg/800px-Giant_Wild_Goose_Pagoda.jpg',
+  '大唐不夜城':'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Shilin_Night_Market_21%2C_Dec_06.JPG/800px-Shilin_Night_Market_21%2C_Dec_06.JPG',
+  '西安城墙':'https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/City_wall_of_Xi%27an_51550-Xian_%2827959363326%29.jpg/800px-City_wall_of_Xi%27an_51550-Xian_%2827959363326%29.jpg',
+  '莫高窟':'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Mogao_Caves_%2854376969262%29.jpg/800px-Mogao_Caves_%2854376969262%29.jpg',
+  '鸣沙山月牙泉':'https://images.unsplash.com/photo-1580741523406-1a0fc69e5232?w=800&q=80',
+  '七彩丹霞':'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',
+  '嘉峪关':'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Jiayu_Guan_2014.01.01_11-03-14.jpg/800px-Jiayu_Guan_2014.01.01_11-03-14.jpg',
+  '麦积山石窟':'https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Majishan_entire_hill_20090226.jpg/800px-Majishan_entire_hill_20090226.jpg',
+  '火焰山':'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Turpan-flaming-mountains-d02.jpg/800px-Turpan-flaming-mountains-d02.jpg',
+  '葡萄沟':'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Valley_of_Grapes_Turpan_%2810%29.jpg/800px-Valley_of_Grapes_Turpan_%2810%29.jpg',
+  '天山天池':'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',
+  '黄河':'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Yellow_River_-_panoramio.jpg/800px-Yellow_River_-_panoramio.jpg',
+  '敦煌':'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Jiucenglou_of_Mogao_Caves.jpg/800px-Jiucenglou_of_Mogao_Caves.jpg',
+  '回民街':'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Shilin_Night_Market_21%2C_Dec_06.JPG/800px-Shilin_Night_Market_21%2C_Dec_06.JPG',
+  '白塔山':'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',
+  '坎儿井':'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Ghasabe_Qanats_of_Gonabad2/800px-Ghasabe_Qanats_of_Gonabad2.jpg',
+  '交河故城':'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Turpan-jiaohe-ruinas-d28.jpg/800px-Turpan-jiaohe-ruinas-d28.jpg',
+  '大巴扎':'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Valley_of_Grapes_Turpan_%2810%29.jpg/800px-Valley_of_Grapes_Turpan_%2810%29.jpg',
+  '西安':'https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/City_wall_of_Xi%27an_51550-Xian_%2827959363326%29.jpg/800px-City_wall_of_Xi%27an_51550-Xian_%2827959363326%29.jpg',
+  '兰州':'https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Skyline_Lanzhou_August_2025.jpg/800px-Skyline_Lanzhou_August_2025.jpg',
+  '吐鲁番':'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Turpan-jiaohe-ruinas-d16.jpg/800px-Turpan-jiaohe-ruinas-d16.jpg',
+  '乌鲁木齐':'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Urumqi_Skyline_July_2019.jpg/800px-Urumqi_Skyline_July_2019.jpg',
+  '张掖':'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Zhangye_Danxia.JPG/800px-Zhangye_Danxia.JPG',
+  '天山':'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Alpine_meadows_and_snow-covered_peaks_in_Khan_Tengri_Nature_Park%2C_Tien_Shan.jpg/800px-Alpine_meadows_and_snow-covered_peaks_in_Khan_Tengri_Nature_Park%2C_Tien_Shan.jpg',
+  '首尔':'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/%EC%A4%91%ED%99%94%EC%A0%84%EC%9D%98_%EB%82%AE.jpg/800px-%EC%A4%91%ED%99%94%EC%A0%84%EC%9D%98_%EB%82%AE.jpg',
+  '大佛寺':'https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&q=80'
+};
+var HERO_IMG = { SILKROAD:'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Zhangye_Danxia.JPG/1600px-Zhangye_Danxia.JPG', XIAN:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/51714-Terracota-Army.jpg/1600px-51714-Terracota-Army.jpg' };
+var product = null, selectedDate = '', currentMonth = new Date(),
+    guests = { adult:1, child:0, infant:0 },
+    lightboxIdx = 0, lightboxImages = [],
+    productId = new URLSearchParams(window.location.search).get('id');
+function matchScenic(text) { var r=[]; for(var k in SCENIC_IMG_DB){if(text.indexOf(k)!==-1&&r.indexOf(SCENIC_IMG_DB[k])===-1)r.push(SCENIC_IMG_DB[k]);} return r; }
+function getDayImages(d){var u=matchScenic(d.title+' '+d.activities.join(' ')+(d.hotel||''));var fbs=['https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Mogao_Caves_%2854376969262%29.jpg/600px-Mogao_Caves_%2854376969262%29.jpg','https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Giant_Wild_Goose_Pagoda.jpg/600px-Giant_Wild_Goose_Pagoda.jpg','https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/City_wall_of_Xi%27an_51550-Xian_%2827959363326%29.jpg/600px-City_wall_of_Xi%27an_51550-Xian_%2827959363326%29.jpg'];while(u.length<3)u.push(fbs[u.length%fbs.length]);return u.slice(0,3);}
+function render(p){
+  document.title=p.title+' | 巴伦旅游';
+  var cn=p.categoryCode==='SILKROAD'?'丝绸之路':'西安';
+  document.getElementById('pd-breadcrumb').innerHTML='<a href="/">首页</a><span class="sep">›</span><a href="/category/'+p.categoryCode+'">'+cn+'</a><span class="sep">›</span><span>'+(p.title.length>30?p.title.substring(0,30)+'...':p.title)+'</span>';
+  var hero=document.getElementById('pd-hero');hero.style.backgroundImage='url('+(HERO_IMG[p.categoryCode]||HERO_IMG.XIAN)+')';
+  document.getElementById('pd-hero-tags').innerHTML=p.tags.map(function(t){return '<span class="pd-hero-tag '+(p.categoryCode==='SILKROAD'?'silk':'premium')+'">'+t+'</span>';}).join('');
+  document.getElementById('pd-hero-title').textContent=p.title;
+  document.getElementById('pd-hero-meta').innerHTML='<span class="pd-hero-meta-item"><span class="icon">📅</span> '+p.duration+'</span><span class="pd-hero-meta-item"><span class="icon">✈️</span> '+p.airline+'</span><span class="pd-hero-meta-item"><span class="icon">📍</span> '+p.departure+' → '+p.destination+'</span>';
+  // Section nav
+  var nav=document.getElementById('pd-section-nav');nav.style.display='block';
+  var inner=document.getElementById('pd-section-nav-inner');
+  var secs=document.querySelectorAll('#pd-main .pd-section');
+  inner.innerHTML=Array.from(secs).map(function(s){return '<a href="#'+s.id+'" data-target="'+s.id+'">'+s.getAttribute('data-nav')+'</a>';}).join('');
+  var links=inner.querySelectorAll('a');
+  function updAct(){var sy=window.scrollY+80,ai=0;secs.forEach(function(s,i){if(s.getBoundingClientRect().top+window.scrollY<=sy+20)ai=i;});links.forEach(function(l,i){l.classList.toggle('active',i===ai);});}
+  window.addEventListener('scroll',updAct);setTimeout(updAct,100);
+  // Route
+  if(p.route&&p.route.length>0){document.getElementById('pd-route-sub').textContent=p.route.length+'个城市';document.getElementById('pd-route').innerHTML='<div class="pd-route-track">'+p.route.map(function(c,i){var cl=i===0?'start':(i===p.route.length-1?'end':''),lb=i===0?'出发':(i===p.route.length-1?'返回':'');return'<div class="pd-route-node"><div class="pd-route-dot '+cl+'"></div><div class="pd-route-city">'+c+'</div>'+(lb?'<div class="pd-route-label">'+lb+'</div>':'')+'</div>'+(i<p.route.length-1?'<div class="pd-route-arrow"></div>':'');}).join('')+'</div>';}
+  else document.getElementById('sec-route').style.display='none';
+  // Itinerary
+  document.getElementById('pd-itinerary-sub').textContent=p.duration+' / '+p.itinerary.length+'天行程';
+  document.getElementById('pd-timeline').innerHTML=p.itinerary.map(function(d){var imgs=getDayImages(d);var acts=d.activities.map(function(a){return '<li>'+a.replace(/\*\*(.+?)\*\*/g,'<strong style="color:var(--primary);">$1</strong>')+'</li>';}).join('');return'<div class="pd-day-card" onclick="pdToggleDay(this)"><div class="pd-day-header"><div class="pd-day-marker">'+d.day+'</div><div class="pd-day-info"><div class="pd-day-title">'+(d.icon?'<span class="pd-day-icon">'+d.icon+'</span>':'')+d.title+'</div><div class="pd-day-meta"><span>🚌 '+d.transport.replace(/[✈️🚌🚄🚲]/g,'').trim()+'</span><span>🍽️ '+d.meals+'</span></div></div><div class="pd-day-expand">▼</div></div><div class="pd-day-body"><div class="pd-day-images">'+imgs.map(function(img){return'<img src="'+img+'" alt="Scenic" loading="lazy" onclick="event.stopPropagation()">';}).join('')+'</div><div class="pd-day-detail-badges"><span class="pd-day-transport">'+d.transport+'</span><span class="pd-day-meals">🍽️ '+d.meals+'</span></div><ul class="pd-day-activities">'+acts+'</ul>'+(d.hotel?'<div class="pd-day-hotel">🏨 '+d.hotel+'</div>':'')+'</div></div>';}).join('');
+  // Highlights
+  var ico=['⭐','🏛️','🎨','🏯','🐪','🏜️','🍇','🏔️','🚲','🎭'];document.getElementById('pd-highlights').innerHTML=p.highlights.map(function(h,i){return'<div class="pd-highlight-card"><div class="pd-highlight-icon">'+(ico[i]||'⭐')+'</div><div class="pd-highlight-text">'+h+'</div></div>';}).join('');
+  // Fees
+  document.getElementById('pd-fees').innerHTML='<div class="pd-fee-box inc"><h3>✅ 费用包含</h3><ul><li>'+p.included.join('</li><li>')+'</li></ul></div><div class="pd-fee-box exc"><h3>❌ 费用不含</h3><ul><li>'+p.excluded.join('</li><li>')+'</li></ul></div>';
+  // Notes
+  document.getElementById('pd-notes').innerHTML=p.notes.map(function(n){return'<li>'+n+'</li>';}).join('');
+  // Gallery
+  if(p.images&&p.images.length>0){lightboxImages=p.images;document.getElementById('pd-gallery-sub').textContent=p.images.length+'张图片';document.getElementById('pd-gallery').innerHTML=p.images.map(function(img,i){return'<div class="pd-gallery-item" onclick="pdOpenLightbox('+i+')"><img src="'+img.url+'" alt="'+img.alt+'" loading="lazy"></div>';}).join('');}
+  else document.getElementById('sec-gallery').style.display='none';
+  // Sidebar
+  if(product.dates&&product.dates.length>0){var today=new Date();var avail=product.dates.find(function(x){return x.available&&new Date(x.date)>=today;});selectedDate=avail?avail.date:product.dates[0].date;}
+  pdUpdateSidebar();renderCalendar(document.getElementById('pd-calendar'));
+  // Intersection Observer for reveal
+  var obs=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});},{threshold:.1});
+  document.querySelectorAll('.pd-reveal').forEach(function(el){obs.observe(el);});
+}
+function pdToggleDay(el){el.classList.toggle('expanded');}
+function renderCalendar(container){var y=currentMonth.getFullYear(),m=currentMonth.getMonth(),fd=new Date(y,m,1).getDay(),dim=new Date(y,m+1,0).getDate(),dip=new Date(y,m,0).getDate(),today=new Date();today.setHours(0,0,0,0);var mn=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];var wd=['日','一','二','三','四','五','六'];var html='<div class="pd-calendar-header"><button class="pd-calendar-nav" onclick="pdCalendarNav(-1)">‹</button><span class="pd-calendar-title">'+y+'年 '+mn[m]+'</span><button class="pd-calendar-nav" onclick="pdCalendarNav(1)">›</button></div><div class="pd-calendar-weekdays">'+wd.map(function(w){return'<div class="pd-calendar-weekday">'+w+'</div>';}).join('')+'</div><div class="pd-calendar-days">';for(var i=fd-1;i>=0;i--)html+='<div class="pd-calendar-day other-month">'+(dip-i)+'</div>';for(var d=1;d<=dim;d++){var ds=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');var dobj=new Date(y,m,d);var de=product.dates?product.dates.find(function(x){return x.date===ds;}):null;var avail=de&&de.available&&dobj>=today;var sel=selectedDate===ds;var ist=today.getTime()===dobj.getTime();var cl='pd-calendar-day';if(!avail)cl+=' unavailable';if(sel)cl+=' selected';if(ist)cl+=' today';var pt=de&&avail?'<div class="pd-calendar-price">₩'+Math.round(de.price/10000)+'만</div>':'';html+='<div class="'+cl+'" onclick="'+(avail?"pdSelectDate('"+ds+"')":'')+'"><span>'+d+'</span>'+pt+'</div>';}var tc=fd+dim;var rm=(7-tc%7)%7;for(var r=1;r<=rm;r++)html+='<div class="pd-calendar-day other-month">'+r+'</div>';html+='</div>';container.innerHTML=html;}
+function pdCalendarNav(dir){currentMonth.setMonth(currentMonth.getMonth()+dir);renderCalendar(document.getElementById('pd-calendar'));}
+function pdSelectDate(ds){selectedDate=ds;renderCalendar(document.getElementById('pd-calendar'));pdUpdateSidebar();}
+function pdUpdateSidebar(){var d=product.dates?product.dates.find(function(x){return x.date===selectedDate;}):null;document.getElementById('pd-sidebar-price').textContent=(d?d.price:product.priceAdult).toLocaleString();document.getElementById('pd-sidebar-duration').textContent=product.duration;pdUpdateTotal();}
+function pdUpdateTotal(){var d=product.dates?product.dates.find(function(x){return x.date===selectedDate;}):null;var bp=d?d.price:product.priceAdult;document.getElementById('pd-total-price').textContent=(bp*guests.adult+product.priceChild*guests.child+product.priceInfant*guests.infant).toLocaleString();document.getElementById('pd-guest-adult').textContent=guests.adult;document.getElementById('pd-guest-child').textContent=guests.child;document.getElementById('pd-guest-infant').textContent=guests.infant;}
+function pdGuestChange(t,d){if(t==='adult')guests.adult=Math.max(1,guests.adult+d);else if(t==='child')guests.child=Math.max(0,guests.child+d);else if(t==='infant')guests.infant=Math.max(0,guests.infant+d);pdUpdateTotal();}
+function pdGoReservation(){if(!selectedDate){alert('请选择出发日期。');return;}window.location.href='/reservation.html?productId='+product.id+'&date='+selectedDate+'&adults='+guests.adult+'&children='+guests.child+'&infants='+guests.infant;}
+function pdOpenLightbox(i){lightboxIdx=i;document.getElementById('pd-lightbox-img').src=lightboxImages[i].url;document.getElementById('pd-lightbox-counter').textContent=(i+1)+' / '+lightboxImages.length;document.getElementById('pd-lightbox').classList.add('active');document.body.style.overflow='hidden';}
+function pdLightboxClose(){document.getElementById('pd-lightbox').classList.remove('active');document.body.style.overflow='';}
+function pdLightboxNav(d){lightboxIdx=(lightboxIdx+d+lightboxImages.length)%lightboxImages.length;pdOpenLightbox(lightboxIdx);}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')pdLightboxClose();if(e.key==='ArrowLeft')pdLightboxNav(-1);if(e.key==='ArrowRight')pdLightboxNav(1);});
+function pdInit(){if(!productId){document.getElementById('pd-app').innerHTML='<div class="pd-empty"><div class="icon">🔍</div><h2>产品未找到</h2><p>请选择一个旅游产品查看详情。</p><a href="/" class="btn">返回首页</a></div>';return;}try{if(typeof __DATA__!=='undefined'){product=__DATA__;render(product);return;}var r=await fetch('/api/products/'+productId);product=await r.json();if(!product||!product.id)throw Error('nf');render(product);}catch(e){document.getElementById('pd-app').innerHTML='<div class="pd-empty"><div class="icon">😅</div><h2>产品未找到</h2><p>该产品不存在或已下架。</p><a href="/" class="btn">返回首页</a></div>';}}
+pdInit();
+</script>
+</body></html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>巴伦旅游 | 한국-중국 여행 전문</title>
+<meta name="description" content="바른상품, 바른价格, 巴伦旅游입니다. 한국-중국 여행 전문 패키지 투어.">
+<link rel="stylesheet" href="/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+html{scroll-behavior:smooth}
+.cat-card{cursor:pointer}
+.cat-card.active{border-color:#2563eb;background:#eff6ff;box-shadow:0 4px 12px rgba(37,99,235,.15)}
+.filter-pills{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.filter-pill{font-size:12px;padding:6px 16px;border-radius:20px;border:1px solid #d1d5db;background:#fff;color:#6b7280;cursor:pointer;transition:all .15s;font-weight:500}
+.filter-pill:hover{border-color:#93c5fd;color:#2563eb;background:#eff6ff}
+.filter-pill.active{background:#2563eb;color:#fff;border-color:#2563eb}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="container header-inner">
+    <a href="/" class="logo">巴伦旅游 <span>| 好产品、好价格、好旅游</span></a>
+    <nav class="nav"><a href="/">首页</a><a href="/admin.html">管理</a></nav>
+    <div class="auth-btns"><a href="/admin.html">登录</a><a href="/admin.html" class="btn-sm btn-primary">注册</a></div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <h1>好产品、好价格、好旅游</h1>
+    <p>한국-중국 여행 전문 패키지 투어</p>
+    <div class="hero-btns">
+      <a href="javascript:void(0)" onclick="scrollToCategory('XIAN')" class="btn-white">查看西安套餐</a>
+      <a href="javascript:void(0)" onclick="scrollToCategory('SILKROAD')" class="btn-border">查看丝绸之路</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section-white" id="categories">
+  <div class="container">
+    <h2 class="section-title">中国旅游地</h2>
+    <div id="categoryGrid" class="grid-categories">加载中...</div>
+  </div>
+</section>
+
+<section class="section" id="products">
+  <div class="container">
+    <h2 class="section-title" id="productSectionTitle">人气套餐</h2>
+    <div class="filter-pills" id="filterPills"></div>
+    <div id="productGrid" class="product-grid">加载中...</div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div><h3>巴伦旅游</h3><p>好产品、好价格、好旅游<br>고객님의 믿음에 보답하는 정직한 여행사입니다.</p></div>
+      <div><h3>客服中心</h3><p class="phone">02-6949-0075</p><p>工作日 上午9点 ~ 下午6点<br>周末/节假日休息</p></div>
+      <div><h3>公司信息</h3><p>상호: (주)巴伦旅游<br>代表: 赵天有<br>地址: 首尔特别市九老区Digital路233号, Ga栋201号</p></div>
+    </div>
+    <div class="footer-bottom">Copyright @ (주)巴伦旅游 All Rights Reserved.</div>
+  </div>
+</footer>
+
+<script>
+var allProducts = [];
+var allCategories = [];
+var iconMap = {XIAN:"🏛️",SILKROAD:"🐪"};
+
+function renderProducts(catCode) {
+  var filtered = catCode ? allProducts.filter(function(p) { return p.categoryCode === catCode; }) : allProducts.filter(function(p) { return p.featured; });
+  var title = document.getElementById("productSectionTitle");
+  if (catCode) {
+    var cat = allCategories.find(function(c) { return c.code === catCode; });
+    title.textContent = (cat ? cat.name : catCode) + " 套餐";
+  } else {
+    title.textContent = "人气套餐";
+  }
+  document.getElementById("productGrid").innerHTML = filtered.length
+    ? filtered.map(function(p) {
+        return '<a href="/product?id=' + p.id + '" class="product-card">'
+          + '<div class="product-img"><div><div class="big-emoji">🏯</div><div class="dest">' + p.destination + '</div></div>' + (p.featured ? '<span class="badge">热卖</span>' : '') + '</div>'
+          + '<div class="product-body">'
+          + '<div class="tags">' + p.tags.slice(0,3).map(function(t) { return '<span class="tag">' + t + '</span>'; }).join("") + '</div>'
+          + '<div class="product-title">' + p.title + '</div>'
+          + '<div class="product-meta"><span>' + p.duration + '</span><span>|</span><span>' + p.airline + '</span></div>'
+          + '<div class="product-footer"><div><div class="price-label">成人1人基准</div><div class="price">' + p.priceAdult.toLocaleString() + '<span class="price-unit">원</span></div></div><span class="product-link">查看详情 →</span></div></div></a>';
+      }).join("")
+    : '<div class="empty-state" style="grid-column:1/-1"><div class="emoji">🏯</div><p>该分类正在筹备中。</p></div>';
+  var cards = document.querySelectorAll(".cat-card");
+  cards.forEach(function(c) { c.classList.toggle("active", c.dataset.code === catCode); });
+  var pills = document.querySelectorAll(".filter-pill");
+  pills.forEach(function(p) { p.classList.toggle("active", p.dataset.code === (catCode || "")); });
+}
+
+function scrollToCategory(catCode) {
+  renderProducts(catCode);
+  setTimeout(function() { document.getElementById("products").scrollIntoView({ behavior: "smooth", block: "start" }); }, 50);
+}
+
+function loadData() {
+  try {
+    var cats = __DATA__.cats;
+    var prods = __DATA__.prods;
+    allCategories = cats;
+    allProducts = prods;
+    document.getElementById("categoryGrid").innerHTML = cats.map(function(c) {
+      return '<div class="cat-card" data-code="' + c.code + '" onclick="scrollToCategory('' + c.code + '')">'
+        + '<div class="emoji">' + (iconMap[c.code] || "🏯") + '</div>'
+        + '<div class="name">' + c.name + '</div>'
+        + '<div class="desc">' + c.description + '</div></div>';
+    }).join("");
+    document.getElementById("filterPills").innerHTML =
+      '<span class="filter-pill active" data-code="" onclick="scrollToCategory(null)">全部分类</span>'
+      + cats.map(function(c) { return '<span class="filter-pill" data-code="' + c.code + '" onclick="scrollToCategory('' + c.code + '')">' + c.name + '</span>'; }).join("");
+    renderProducts(null);
+  } catch(e) { console.error(e); }
+}
+loadData();
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "barun-travel",
+  "version": "1.0.0",
+  "description": "巴伦旅游（바른투어）在线预订平台",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,40 @@
+ <!DOCTYPE html>
+ <html lang="ko"><head>
+ <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+ <title>预订申请 | 巴伦旅游</title>
+ <link rel="stylesheet" href="/style.css">
+ <script>
+ var qs = new URLSearchParams(window.location.search);
+ var productId = qs.get("productId"), date = qs.get("date"), adults = parseInt(qs.get("adults"))||1, children = parseInt(qs.get("children"))||0, infants = parseInt(qs.get("infants"))||0;
+ async function load() {
+   var r = await fetch("/api/products/"+productId);
+   var prod = await r.json();
+   if(!prod||!prod.id){document.getElementById("app").innerHTML='<div class=empty-state><div class=emoji>😅</div><p>Not found</p></div>';return;}
+   var d = prod.dates.find(function(x){return x.date===date;});
+   var total = (d?d.price:prod.priceAdult)*adults+prod.priceChild*children+prod.priceInfant*infants;
+   document.getElementById("app").innerHTML = 
+     '<h1 style="font-size:24px;font-weight:700;margin:24px 0 4px">预订申请</h1>'+
+     '<p style="font-size:14px;color:#9ca3af;margin-bottom:20px">'+prod.title+'</p>'+
+     '<div style="background:#f8f9fa;padding:16px;border-radius:12px;margin-bottom:24px">'+
+     '<p>出发日期: '+date+'<br>成人 '+adults+'명 / 儿童 '+children+'명 / 幼儿 '+infants+'명</p>'+
+     '<p style="font-size:20px;color:#2563eb;font-weight:700;margin-top:8px">'+total.toLocaleString()+'원</p></div>'+
+     '<div class=form-group><label>姓名 *</label><input id=custName placeholder="姓名"></div>'+
+     '<div class=form-group><label>联系方式 *</label><input id=custPhone placeholder="010-0000-0000"></div>'+
+     '<div class=form-group><label>邮箱</label><input id=custEmail placeholder="example@email.com"></div>'+
+     '<div class=form-group><label>备注</label><textarea id=custMsg rows=3 placeholder="备注을 입력해주세요."></textarea></div>'+
+     '<button class=btn-book onclick="goPay()">立即预订并支付</button>';
+   window.goPay = async function() {
+     var n=document.getElementById("custName").value.trim(), ph=document.getElementById("custPhone").value.trim();
+     if(!n||!ph){alert("이름과 연락처를 입력해주세요.");return;}
+     var r2=await fetch("/api/reservations",{method:"POST",headers:{"Content-Type":"application/json"},
+       body:JSON.stringify({productId:parseInt(productId),productTitle:prod.title,travelDate:date,adults:adults,children:children,infants:infants,totalPrice:total,customerName:n,customerPhone:ph,customerEmail:document.getElementById("custEmail").value.trim(),message:document.getElementById("custMsg").value.trim()})});
+     var result=await r2.json();
+     if(r2.ok&&result.id) window.location.href="/payment.html?reservationId="+result.id+"&total="+total+"&title="+encodeURIComponent(prod.title);
+     else alert("예약 중 오류가 발생했습니다.");
+   };
+ }
+ load();
+ </script></head><body>
+ <header class="header"><div class="container header-inner"><a href="/" class="logo">巴伦旅游</a></div></header>
+ <div class="container" style="max-width:640px" id="app"><div class=empty-state><div class=emoji>⏳</div><p>加载中...</p></div></div>
+ </body></html>

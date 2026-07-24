@@ -1,0 +1,32 @@
+ <!DOCTYPE html>
+ <html lang="ko"><head>
+ <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+ <title>分类 | 巴伦旅游</title>
+ <link rel="stylesheet" href="/style.css">
+ <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+ </head><body>
+ <header class="header"><div class="container header-inner"><a href="/" class="logo">巴伦旅游 <span>| 好产品、好价格、好旅游</span></a><nav class="nav"><a href="/">首页</a><a href="/category/XIAN">서안</a><a href="/admin.html">管理</a></nav><div class="auth-btns"><a href="/admin.html">登录</a><a href="/admin.html" class="btn-sm btn-primary">注册</a></div></div></header>
+ 
+ <div class="container"><div class="breadcrumb"><a href="/">首页</a> &gt; 중국 &gt; <span id="catName">分类</span></div>
+ <div class="section-header"><h1 id="catTitle">分类</h1><p id="catCount" class="filter-sort" style="margin-left:0;margin-top:4px"></p></div>
+ <div class="filter-bar"><span class="filter-label">筛选</span><button class="filter-btn active">全部</button><button class="filter-btn">서안</button><button class="filter-btn">出发日期</button><button class="filter-btn">行程天数</button><span class="filter-sort">推荐排序</span></div>
+ <div id="productGrid" class="product-grid">加载中...</div></div>
+ 
+ <footer class="footer"><div class="container"><div class="footer-grid"><div><h3>巴伦旅游</h3><p>好产品、好价格、好旅游<br>고객님의 믿음에 보답하는 정직한 여행사입니다.</p></div><div><h3>客服中心</h3><p class="phone">02-6949-0075</p><p>工作日 上午9点 ~ 下午6点<br>周末/节假日休息</p></div><div><h3>公司信息</h3><p>상호: (주)巴伦旅游<br>代表: 赵天有<br>地址: 首尔特别市九老区Digital路233号, Ga栋201号</p></div></div><div class="footer-bottom">Copyright @ (주)巴伦旅游 All Rights Reserved.</div></div></footer>
+ 
+ <script>
+ const code = window.location.pathname.split("/").pop();
+ const tagColors = {"纯玩":"tag-green","无购物":"tag-green","无购物일정":"tag-green","노팁/纯玩/无购物":"tag-green","大韩航空":"tag","华山":"tag","完美行程":"tag"};
+ async function load() {
+   const [cats, prods] = await Promise.all([fetch("/api/categories").then(r=>r.json()), fetch("/api/products").then(r=>r.json())]);
+   const cat = cats.find(c => c.code === code);
+   if(cat) { document.getElementById("catName").textContent = cat.name; document.getElementById("catTitle").textContent = `${cat.name} | ${cat.description}`; document.title = `${cat.name} | 巴伦旅游`; }
+   const filtered = prods.filter(p => p.categoryCode === code);
+   document.getElementById("catCount").textContent = `${filtered.length}个商品`;
+   document.getElementById("productGrid").innerHTML = filtered.length ? filtered.map(p =>
+     `<a href="/product?id=${p.id}" class="product-card"><div class="product-img"><div><div class="big-emoji">🏯</div><div class="dest">${p.destination}</div></div></div><div class="product-body"><div class="tags">${p.tags.slice(0,3).map(t => `<span class="tag ${tagColors[t]||''}">${t}</span>`).join("")}</div><div class="product-title">${p.title}</div><div class="product-meta"><span>${p.duration}</span><span>|</span><span>${p.airline}</span>${p.rating>0?`<span>|</span><span style="color:#f59e0b">${'★'.repeat(p.rating)}</span><span>(${p.reviewCount})</span>`:''}</div><div class="product-footer"><div><div class="price-label">成人1人基准</div><div class="price">${p.priceAdult.toLocaleString()}<span class="price-unit">元~</span></div></div><span class="product-link">查看详情 →</span></div></div></a>`
+   ).join("") : '<div class="empty-state" style="grid-column:1/-1"><div class="emoji">🏯</div><p>该分类正在筹备中。</p></div>';
+ }
+ load();
+ </script>
+ </body></html>
