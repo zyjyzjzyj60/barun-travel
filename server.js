@@ -3,8 +3,8 @@
  const path = require("path");
  
 const PORT = process.env.PORT || 3023;
- const DATA_DIR = path.join(__dirname, "data");
- const PUBLIC_DIR = path.join(__dirname, "public");
+const DATA_DIR = __dirname;
+const PUBLIC_DIR = __dirname;
  
  function readJSON(file) {
    try { return JSON.parse(fs.readFileSync(path.join(DATA_DIR, file), "utf-8")); }
