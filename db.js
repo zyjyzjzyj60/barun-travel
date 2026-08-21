@@ -20,10 +20,10 @@ const product = {
 };
 
 const imageSeed = [
-  { position: 1, url: "/assets/xian-terracotta.webp", alt: "西安兵马俑", author: "Ondřej Žváček", sourceUrl: "https://commons.wikimedia.org/wiki/File:Terracotta_Army.jpg", license: "CC BY 2.5", licenseUrl: "https://creativecommons.org/licenses/by/2.5/" },
-  { position: 2, url: "/assets/xian-huaqing.webp", alt: "西安华清宫", author: "源義信", sourceUrl: "https://commons.wikimedia.org/wiki/File:2023-10-08_Huaqing_Palace_華清宮.jpg", license: "CC BY-SA 4.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/" },
-  { position: 3, url: "/assets/xian-pagoda.webp", alt: "西安大雁塔", author: "NocturneNoir", sourceUrl: "https://commons.wikimedia.org/wiki/File:BigWildGoosePagoda1.JPG", license: "CC BY-SA 3.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0/" },
-  { position: 4, url: "/assets/xian-city-wall.webp", alt: "西安城墙", author: "H2v5o68z", sourceUrl: "https://commons.wikimedia.org/wiki/File:City_wall_of_Xi%27an.jpg", license: "CC0 1.0", licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/" }
+  { position: 1, url: "/assets/xian-terracotta.webp", alt: "西安兵马俑", author: "scott1346", sourceUrl: "https://commons.wikimedia.org/wiki/File:Terra_Cotta_army.jpg", license: "CC BY 2.0", licenseUrl: "https://creativecommons.org/licenses/by/2.0/" },
+  { position: 2, url: "/assets/xian-huaqing.webp", alt: "西安华清宫", author: "Fernando", sourceUrl: "https://commons.wikimedia.org/wiki/File:Huaqing_(35109621691).jpg", license: "CC BY-SA 2.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/2.0/" },
+  { position: 3, url: "/assets/xian-pagoda.webp", alt: "西安大雁塔", author: "Kevin Poh", sourceUrl: "https://commons.wikimedia.org/wiki/File:Big_Wild_Goose_Pagoda_(3515721587).jpg", license: "CC BY 2.0", licenseUrl: "https://creativecommons.org/licenses/by/2.0/" },
+  { position: 4, url: "/assets/xian-city-wall.webp", alt: "西安城墙", author: "Gary Todd", sourceUrl: "https://commons.wikimedia.org/wiki/File:Xi%27an_City_Wall_(9912110523).jpg", license: "CC0 1.0", licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/" }
 ];
 
 let pool;
@@ -70,7 +70,7 @@ async function initializeDatabase() {
     CREATE TABLE IF NOT EXISTS orders (id SERIAL PRIMARY KEY, order_no TEXT NOT NULL UNIQUE, product_id TEXT NOT NULL REFERENCES products(id), departure_id INTEGER NOT NULL REFERENCES departures(id), adults INTEGER NOT NULL CHECK(adults >= 1), children INTEGER NOT NULL DEFAULT 0 CHECK(children >= 0), infants INTEGER NOT NULL DEFAULT 0 CHECK(infants >= 0), total_price INTEGER NOT NULL CHECK(total_price >= 0), contact_name TEXT NOT NULL, contact_phone TEXT NOT NULL, contact_email TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'PENDING_PAYMENT', payment_mode TEXT NOT NULL DEFAULT 'DEMO', is_test BOOLEAN NOT NULL DEFAULT TRUE, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), paid_at TIMESTAMPTZ);
   `);
   await database.query(`INSERT INTO products (id,title,subtitle,duration,departure,airline,destination,description,highlights,itinerary,included,excluded,notes) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) ON CONFLICT (id) DO NOTHING`, [product.id, product.title, product.subtitle, product.duration, product.departure, product.airline, product.destination, product.description, JSON.stringify(product.highlights), JSON.stringify(product.itinerary), JSON.stringify(product.included), JSON.stringify(product.excluded), JSON.stringify(product.notes)]);
-  for (const image of imageSeed) await database.query(`INSERT INTO product_images (product_id,position,url,alt,author,source_url,license,license_url) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (product_id,position) DO NOTHING`, [product.id, image.position, image.url, image.alt, image.author, image.sourceUrl, image.license, image.licenseUrl]);
+  for (const image of imageSeed) await database.query(`INSERT INTO product_images (product_id,position,url,alt,author,source_url,license,license_url) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (product_id,position) DO UPDATE SET url=EXCLUDED.url, alt=EXCLUDED.alt, author=EXCLUDED.author, source_url=EXCLUDED.source_url, license=EXCLUDED.license, license_url=EXCLUDED.license_url`, [product.id, image.position, image.url, image.alt, image.author, image.sourceUrl, image.license, image.licenseUrl]);
   if (usesRailwayDemoFallback) {
     await database.query(`
       INSERT INTO departures (product_id,travel_date,adult_price,child_price,infant_price,capacity,note)
