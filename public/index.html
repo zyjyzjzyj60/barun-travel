@@ -1,24 +1,38 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="ko">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="巴伦旅游西安3晚4日在线预订演示站">
-  <title>巴伦旅游｜西安 3晚4日</title><link rel="stylesheet" href="/style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="바른투어 · 한국에서 중국으로 떠나는 깊이 있는 여행">
+  <title>바른투어 | 중국을 더 깊이 만나는 여정</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;600;700;800&family=Noto+Serif+KR:wght@500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
 </head>
-<body>
-  <div class="demo-bar">演示站 · 测试下单不扣款，不要填写护照号、银行卡或真实敏感资料</div>
-  <header class="site-header"><a class="brand" href="/"><span class="brand-mark">BT</span><span>巴伦旅游<small>BARUN TRAVEL</small></span></a><nav><a href="#schedule">选择团期</a><a href="#itinerary">每日行程</a><a href="#booking">立即预订</a><a href="/attribution.html">图片授权</a><a class="admin-link" href="/admin.html">运营后台</a></nav></header>
+<body class="site-body">
+  <div class="demo-notice"><span>DEMO / 공개 시연</span><p>테스트 예약과 테스트 결제만 가능합니다. 여권·카드 등 민감한 정보를 입력하지 마세요.</p></div>
+  <header class="main-header" data-header>
+    <a class="wordmark" href="/" aria-label="바른투어 홈"><span class="wordmark-seal">B</span><span>바른투어<small>BARUN TRAVEL</small></span></a>
+    <nav class="main-nav" aria-label="주요 메뉴"><a href="#journeys">여행 찾기</a><a href="#way">이용 안내</a><a href="/attribution.html">이미지 출처</a><a class="staff-link" href="/admin.html">운영자</a></nav>
+  </header>
   <main>
-    <section class="hero" id="top"><div class="hero-copy"><p class="eyebrow">INCHEON → XI'AN · 04 DAYS</p><h1>四天，<em>走进长安。</em></h1><p class="hero-text">兵马俑的肃穆、华清宫的山色与大唐不夜城的灯火，组成第一次西安之行恰好的节奏。</p><div class="hero-meta"><span>✈ <b id="airline">大韩航空直飞</b></span><span>⌁ <b id="duration">3晚4日</b></span><span>◎ <b id="departure">仁川机场</b></span></div><a class="button button-red" href="#schedule">查看可订团期 <span>↓</span></a></div><div class="hero-image" id="heroImage"><div class="image-credit">西安 · 兵马俑</div></div></section>
-    <section class="route-strip"><div><strong>01</strong><span>秦始皇兵马俑</span></div><i></i><div><strong>02</strong><span>华清宫</span></div><i></i><div><strong>03</strong><span>大雁塔</span></div><i></i><div><strong>04</strong><span>西安城墙</span></div></section>
-    <section class="section intro"><div><p class="eyebrow">THE ESSENTIALS</p><h2 id="productTitle">西安深度之旅</h2></div><p id="description" class="lead"></p><ul class="highlights" id="highlights"></ul></section>
-    <section class="section gallery-section"><div class="section-heading"><div><p class="eyebrow">PLACES YOU WILL REMEMBER</p><h2>一城，四个片段</h2></div><p>所用景点照片均为可商用授权素材；点击页脚可查看作者、协议与来源。</p></div><div class="gallery" id="gallery"></div></section>
-    <section class="section schedule-section" id="schedule"><div class="section-heading"><div><p class="eyebrow">DEPARTURE CALENDAR</p><h2>选择一个出发日</h2></div><p>团期、价格与余位由后台维护。未开放团期不会显示为可预订。</p></div><div id="departureList" class="departure-list"><p class="loading">正在读取可订团期…</p></div></section>
-    <section class="section booking-section" id="booking"><div class="booking-copy"><p class="eyebrow">YOUR TRIP, AT A GLANCE</p><h2>确定出发<br>再去见长安。</h2><p>本页是公开演示版。提交后仅创建一笔测试订单，并模拟支付结果；不会发生真实扣款。</p><div class="notice"><b>正式上线后</b> 将在此处接入 KakaoPay，并在支付前收集加密的护照出行资料。</div></div><form class="booking-card" id="bookingForm"><div class="booking-status" id="selectedDeparture">请先选择一个可订团期</div><div class="travelers"><label>成人<input id="adults" type="number" min="1" value="1"><small>占用名额</small></label><label>儿童<input id="children" type="number" min="0" value="0"><small>占用名额</small></label><label>婴儿<input id="infants" type="number" min="0" value="0"><small>不占名额</small></label></div><div class="contact-fields"><label>演示姓名<input name="contactName" required maxlength="50" placeholder="例如：王小明（测试）"></label><label>演示手机号<input name="contactPhone" required maxlength="40" placeholder="例如：010-0000-0000"></label><label>演示邮箱<input name="contactEmail" type="email" required maxlength="100" placeholder="example@test.com"></label></div><label class="consent"><input id="consent" type="checkbox" required> 我了解这是测试订单，不填写真实护照、支付卡或其他敏感个人信息。</label><div class="price-row"><span>测试订单总额</span><strong id="totalPrice">—</strong></div><button class="button button-dark" type="submit">创建测试订单 <span>→</span></button><p class="form-message" id="formMessage" aria-live="polite"></p></form></section>
-    <section class="section itinerary-section" id="itinerary"><div class="section-heading"><div><p class="eyebrow">DAY BY DAY</p><h2>每天，都留一点余白</h2></div></div><div class="itinerary" id="itineraryList"></div></section>
-    <section class="section detail-grid"><article><p class="eyebrow">INCLUDED</p><h3>费用包含</h3><ul id="included"></ul></article><article><p class="eyebrow">NOT INCLUDED</p><h3>费用不含</h3><ul id="excluded"></ul></article><article><p class="eyebrow">GOOD TO KNOW</p><h3>出发前请留意</h3><ul id="notes"></ul></article></section>
+    <section class="home-hero">
+      <div class="hero-grain" aria-hidden="true"></div>
+      <div class="hero-arc" aria-hidden="true"><svg viewBox="0 0 1200 540" preserveAspectRatio="none"><path d="M-30 422C228 318 330 126 602 180c257 52 369 254 645 40"/><circle cx="251" cy="303" r="6"/><circle cx="602" cy="180" r="7"/><circle cx="917" cy="281" r="6"/></svg></div>
+      <div class="home-hero-copy"><p class="mono-label">SEOUL → CHINA / 2026</p><h1>낯선 풍경보다,<br><em>오래 남을 장면.</em></h1><p class="hero-lead">유명한 곳을 빨리 지나치지 않습니다. 중국의 시간과 지형을 따라, 제대로 만나는 여정을 만듭니다.</p><a class="action-link" href="#journeys">여정 보기 <span>↓</span></a></div>
+      <div class="home-hero-side"><div class="hero-index"><span>01</span><p>CURATED<br>CHINA JOURNEYS</p></div><p>중국 여행<br><strong>중국을 더 깊이.</strong></p></div>
+    </section>
+
+    <section class="home-intro section-shell"><div class="section-mark">BARUN<br>TRAVEL</div><div><p class="mono-label">OUR POINT OF VIEW</p><h2>한 도시를 넘어,<br>그곳의 <em>결</em>을 만납니다.</h2></div><p class="intro-copy">바른투어는 한국에서 출발하는 중국 여행을 위한 작은 출발점입니다. 항공편과 이동 동선을 고려하고, 각 날의 장소를 왜 가는지 분명하게 보여 드립니다.<span> 巴伦旅游，为从韩国出发的中国旅行，梳理每一日真正值得抵达的地方。</span></p></section>
+
+    <section class="journey-section section-shell" id="journeys"><div class="section-heading"><div><p class="mono-label">SELECT A JOURNEY</p><h2>지금, 떠날 수 있는<br>두 개의 방향.</h2></div><p>각 여행에는 매일의 이동, 주요 장소와 이미지, 그리고 공개 시연용 출발일이 준비되어 있습니다.</p></div><div id="journeyCards" class="journey-grid" aria-live="polite"><p class="loading-state">여정을 불러오는 중입니다…</p></div></section>
+
+    <section class="route-manifesto"><div class="manifesto-track"><span>인천</span><i></i><span>시안</span><i></i><span>하서주랑</span><i></i><span>둔황</span><i></i><span>천산</span></div><div class="manifesto-copy"><p class="mono-label">THE DISTANCE IS PART OF THE STORY</p><h2>이동도, 여행의<br>한 장면이 되도록.</h2><p>고속철과 도로, 비행과 산길. 긴 이동이 있는 날에는 이유와 리듬을 먼저 설명합니다.</p></div></section>
+
+    <section class="how-section section-shell" id="way"><p class="mono-label">HOW THIS DEMO WORKS</p><div class="how-grid"><article><span>01</span><h3>여정을 고릅니다</h3><p>매일 어디에 가는지, 어떤 이동이 있는지 먼저 확인합니다.</p></article><article><span>02</span><h3>시연 출발일을 고릅니다</h3><p>표시된 가격과 좌석은 예약 흐름을 확인하기 위한 시연 데이터입니다.</p></article><article><span>03</span><h3>테스트 예약을 만듭니다</h3><p>실제 결제는 발생하지 않으며 여권·카드 정보는 받지 않습니다.</p></article></div></section>
   </main>
-  <footer><div><a class="brand footer-brand" href="/"><span class="brand-mark">BT</span><span>巴伦旅游<small>BARUN TRAVEL</small></span></a><p>好产品、好价格、好旅游</p></div><div><p>客服中心</p><strong>02-6949-0075</strong><small>工作日 09:00–18:00</small></div><div><p>本网站</p><a href="/attribution.html">图片来源与授权</a><a href="/admin.html">运营后台</a></div></footer>
-  <div class="modal" id="paymentModal" hidden><div class="modal-card"><p class="eyebrow">DEMO PAYMENT</p><h2>测试支付确认</h2><p id="paymentSummary"></p><div class="modal-actions"><button class="button button-ghost" id="cancelPayment" type="button">返回修改</button><button class="button button-red" id="confirmPayment" type="button">完成测试支付</button></div></div></div>
+  <footer class="site-footer"><div class="footer-brand"><a class="wordmark" href="/"><span class="wordmark-seal">B</span><span>바른투어<small>BARUN TRAVEL</small></span></a><p>좋은 여행은, 좋은 장면에서 시작됩니다.</p></div><div><p class="mono-label">CONTACT</p><strong>02-6949-0075</strong><span>평일 09:00–18:00</span></div><div><p class="mono-label">DISCLOSURE</p><a href="/attribution.html">이미지 출처 및 라이선스</a><a href="/admin.html">운영자 로그인</a></div></footer>
   <script src="/app.js"></script>
-</body></html>
+</body>
+</html>

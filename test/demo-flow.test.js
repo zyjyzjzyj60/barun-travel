@@ -27,12 +27,12 @@ test("本地演示版：团期、测试订单与测试支付完整流转", async
   }
   const login = await fetchJson(`${origin}/api/admin/login`, { method: "POST", body: JSON.stringify({ username: "admin", password: "test-only-password" }) });
   const cookie = login.response.headers.get("set-cookie").split(";")[0];
-  const departure = await fetchJson(`${origin}/api/admin/departures`, { method: "POST", headers: { cookie }, body: JSON.stringify({ travelDate: "2026-11-12", adultPrice: 949000, childPrice: 949000, infantPrice: 200000, capacity: 5, isOnSale: true, note: "test" }) });
-  assert.equal(departure.payload.travelDate, "2026-11-12");
-  const order = await fetchJson(`${origin}/api/orders`, { method: "POST", body: JSON.stringify({ departureId: departure.payload.id, adults: 2, children: 1, infants: 0, contactName: "测试用户", contactPhone: "010-0000-0000", contactEmail: "demo@example.com" }) });
+  const departure = await fetchJson(`${origin}/api/admin/departures`, { method: "POST", headers: { cookie }, body: JSON.stringify({ productId: "xian-4d", travelDate: "2026-12-12", adultPrice: 949000, childPrice: 949000, infantPrice: 200000, capacity: 5, isOnSale: true, note: "test" }) });
+  assert.equal(departure.payload.travelDate, "2026-12-12");
+  const order = await fetchJson(`${origin}/api/orders`, { method: "POST", body: JSON.stringify({ productId: "xian-4d", departureId: departure.payload.id, adults: 2, children: 1, infants: 0, contactName: "测试用户", contactPhone: "010-0000-0000", contactEmail: "demo@example.com" }) });
   assert.equal(order.payload.totalPrice, 2847000);
   const payment = await fetchJson(`${origin}/api/orders/${order.payload.orderId}/demo-pay`, { method: "POST", body: "{}" });
   assert.equal(payment.payload.status, "PAID_PENDING_CONFIRMATION");
-  const departures = await fetchJson(`${origin}/api/departures`);
-  assert.equal(departures.payload[0].availableSeats, 2);
+  const departures = await fetchJson(`${origin}/api/products/xian-4d/departures`);
+  assert.equal(departures.payload.find(item => item.id === departure.payload.id).availableSeats, 2);
 });
