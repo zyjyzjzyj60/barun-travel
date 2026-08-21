@@ -2,7 +2,7 @@ const http = require("http");
 const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
-const { getPool, initializeDatabase, passwordMatches } = require("./db");
+const { getPool, initializeDatabase, passwordMatches, enableRailwayDemoFallback } = require("./db");
 
 const PORT = Number(process.env.PORT || 3023);
 const PUBLIC_DIR = path.join(__dirname, "public");
@@ -85,7 +85,17 @@ function serveStatic(res, pathname) {
   res.writeHead(200, { "Content-Type": mime[path.extname(file).toLowerCase()] || "application/octet-stream", "X-Content-Type-Options": "nosniff" }); fs.createReadStream(file).pipe(res);
 }
 
-initializeDatabase().then(() => {
+async function start() {
+  try {
+    await initializeDatabase();
+  } catch (error) {
+    if (!process.env.RAILWAY_PROJECT_ID) throw error;
+    console.error("[demo] Database startup failed; starting the public demo with ephemeral data:", error.message);
+    await enableRailwayDemoFallback();
+    await initializeDatabase();
+  }
   const server = http.createServer(async (req, res) => { try { const url = new URL(req.url, `http://${req.headers.host || "localhost"}`); if (url.pathname.startsWith("/api/")) { const handled = await api(req, res, url); if (handled !== false) return; } if (!["GET", "HEAD"].includes(req.method)) return sendError(res, 405, "不支持该请求方式"); serveStatic(res, url.pathname); } catch (error) { console.error(error); if (!res.headersSent) sendError(res, 500, "服务器暂时无法处理请求"); else res.end(); } });
   server.listen(PORT, "0.0.0.0", () => console.log(`巴伦旅游演示站已启动：http://localhost:${PORT}`));
-}).catch(error => { console.error("数据库初始化失败：", error.message); process.exit(1); });
+}
+
+start().catch(error => { console.error("数据库初始化失败：", error.message); process.exit(1); });

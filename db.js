@@ -52,6 +52,13 @@ function getPool() {
   return pool;
 }
 
+async function enableRailwayDemoFallback() {
+  if (!process.env.RAILWAY_PROJECT_ID) throw new Error("Railway demo fallback is only available on Railway.");
+  if (pool?.end) await pool.end().catch(() => {});
+  usesRailwayDemoFallback = true;
+  pool = createMemoryPool();
+}
+
 function passwordHash(password, salt = crypto.randomBytes(16).toString("hex")) {
   return new Promise((resolve, reject) => crypto.scrypt(password, salt, 64, (error, key) => error ? reject(error) : resolve(`${salt}:${key.toString("hex")}`)));
 }
@@ -87,4 +94,4 @@ async function initializeDatabase() {
   }
 }
 
-module.exports = { getPool, initializeDatabase, passwordMatches };
+module.exports = { getPool, initializeDatabase, passwordMatches, enableRailwayDemoFallback };
