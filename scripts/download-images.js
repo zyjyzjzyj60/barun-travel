@@ -21,4 +21,9 @@ async function download(filename, target) {
   console.log(`saved ${target}`);
 }
 
-Promise.all(assets.map(([filename, target]) => download(filename, target))).catch(error => { console.error(error); process.exitCode = 1; });
+async function main() {
+  await fs.mkdir(destination, { recursive: true });
+  await Promise.all(assets.map(([filename, target]) => download(filename, target)));
+}
+
+main().catch(error => { console.error(error); process.exitCode = 1; });
