@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="巴伦旅游西安3晚4日在线预订演示站">
+  <title>巴伦旅游｜西安 3晚4日</title><link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="demo-bar">演示站 · 测试下单不扣款，不要填写护照号、银行卡或真实敏感资料</div>
+  <header class="site-header"><a class="brand" href="/"><span class="brand-mark">BT</span><span>巴伦旅游<small>BARUN TRAVEL</small></span></a><nav><a href="#schedule">选择团期</a><a href="#itinerary">每日行程</a><a href="#booking">立即预订</a><a href="/attribution.html">图片授权</a><a class="admin-link" href="/admin.html">运营后台</a></nav></header>
+  <main>
+    <section class="hero" id="top"><div class="hero-copy"><p class="eyebrow">INCHEON → XI'AN · 04 DAYS</p><h1>四天，<em>走进长安。</em></h1><p class="hero-text">兵马俑的肃穆、华清宫的山色与大唐不夜城的灯火，组成第一次西安之行恰好的节奏。</p><div class="hero-meta"><span>✈ <b id="airline">大韩航空直飞</b></span><span>⌁ <b id="duration">3晚4日</b></span><span>◎ <b id="departure">仁川机场</b></span></div><a class="button button-red" href="#schedule">查看可订团期 <span>↓</span></a></div><div class="hero-image" id="heroImage"><div class="image-credit">西安 · 兵马俑</div></div></section>
+    <section class="route-strip"><div><strong>01</strong><span>秦始皇兵马俑</span></div><i></i><div><strong>02</strong><span>华清宫</span></div><i></i><div><strong>03</strong><span>大雁塔</span></div><i></i><div><strong>04</strong><span>西安城墙</span></div></section>
+    <section class="section intro"><div><p class="eyebrow">THE ESSENTIALS</p><h2 id="productTitle">西安深度之旅</h2></div><p id="description" class="lead"></p><ul class="highlights" id="highlights"></ul></section>
+    <section class="section gallery-section"><div class="section-heading"><div><p class="eyebrow">PLACES YOU WILL REMEMBER</p><h2>一城，四个片段</h2></div><p>所用景点照片均为可商用授权素材；点击页脚可查看作者、协议与来源。</p></div><div class="gallery" id="gallery"></div></section>
+    <section class="section schedule-section" id="schedule"><div class="section-heading"><div><p class="eyebrow">DEPARTURE CALENDAR</p><h2>选择一个出发日</h2></div><p>团期、价格与余位由后台维护。未开放团期不会显示为可预订。</p></div><div id="departureList" class="departure-list"><p class="loading">正在读取可订团期…</p></div></section>
+    <section class="section booking-section" id="booking"><div class="booking-copy"><p class="eyebrow">YOUR TRIP, AT A GLANCE</p><h2>确定出发<br>再去见长安。</h2><p>本页是公开演示版。提交后仅创建一笔测试订单，并模拟支付结果；不会发生真实扣款。</p><div class="notice"><b>正式上线后</b> 将在此处接入 KakaoPay，并在支付前收集加密的护照出行资料。</div></div><form class="booking-card" id="bookingForm"><div class="booking-status" id="selectedDeparture">请先选择一个可订团期</div><div class="travelers"><label>成人<input id="adults" type="number" min="1" value="1"><small>占用名额</small></label><label>儿童<input id="children" type="number" min="0" value="0"><small>占用名额</small></label><label>婴儿<input id="infants" type="number" min="0" value="0"><small>不占名额</small></label></div><div class="contact-fields"><label>演示姓名<input name="contactName" required maxlength="50" placeholder="例如：王小明（测试）"></label><label>演示手机号<input name="contactPhone" required maxlength="40" placeholder="例如：010-0000-0000"></label><label>演示邮箱<input name="contactEmail" type="email" required maxlength="100" placeholder="example@test.com"></label></div><label class="consent"><input id="consent" type="checkbox" required> 我了解这是测试订单，不填写真实护照、支付卡或其他敏感个人信息。</label><div class="price-row"><span>测试订单总额</span><strong id="totalPrice">—</strong></div><button class="button button-dark" type="submit">创建测试订单 <span>→</span></button><p class="form-message" id="formMessage" aria-live="polite"></p></form></section>
+    <section class="section itinerary-section" id="itinerary"><div class="section-heading"><div><p class="eyebrow">DAY BY DAY</p><h2>每天，都留一点余白</h2></div></div><div class="itinerary" id="itineraryList"></div></section>
+    <section class="section detail-grid"><article><p class="eyebrow">INCLUDED</p><h3>费用包含</h3><ul id="included"></ul></article><article><p class="eyebrow">NOT INCLUDED</p><h3>费用不含</h3><ul id="excluded"></ul></article><article><p class="eyebrow">GOOD TO KNOW</p><h3>出发前请留意</h3><ul id="notes"></ul></article></section>
+  </main>
+  <footer><div><a class="brand footer-brand" href="/"><span class="brand-mark">BT</span><span>巴伦旅游<small>BARUN TRAVEL</small></span></a><p>好产品、好价格、好旅游</p></div><div><p>客服中心</p><strong>02-6949-0075</strong><small>工作日 09:00–18:00</small></div><div><p>本网站</p><a href="/attribution.html">图片来源与授权</a><a href="/admin.html">运营后台</a></div></footer>
+  <div class="modal" id="paymentModal" hidden><div class="modal-card"><p class="eyebrow">DEMO PAYMENT</p><h2>测试支付确认</h2><p id="paymentSummary"></p><div class="modal-actions"><button class="button button-ghost" id="cancelPayment" type="button">返回修改</button><button class="button button-red" id="confirmPayment" type="button">完成测试支付</button></div></div></div>
+  <script src="/app.js"></script>
+</body></html>
