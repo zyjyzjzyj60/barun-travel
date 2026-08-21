@@ -37,6 +37,8 @@ npm start
    - `ADMIN_INITIAL_PASSWORD`
    - `NODE_ENV=production`
 4. Railway 会读取 `railway.toml` 并执行 `npm start`。部署成功后，在 Networking 中点击 **Generate Domain**，得到可外网访问的 `*.up.railway.app` HTTPS 地址。
+
+如果首次部署时还没有连接 PostgreSQL，Railway 演示环境会临时使用内存数据库并自动放入两个演示团期，确保页面和测试下单可以验收。该模式的数据会在重启时清空；添加 PostgreSQL 服务并把其 `DATABASE_URL` 引用到网站服务后，应用会自动切换为持久数据库。
 5. 访问 `/admin.html`，先创建真实或测试团期，再向外分享前台地址。
 
 免费计划只适合演示。未提供真实团期、未完成 KakaoPay 商户签约前，请不要接收真实旅客资料或开放真实支付。

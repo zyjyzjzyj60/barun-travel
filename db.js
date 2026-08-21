@@ -27,12 +27,24 @@ const imageSeed = [
 ];
 
 let pool;
+let usesRailwayDemoFallback = false;
+
+function createMemoryPool() {
+  const { newDb } = require("pg-mem");
+  const memoryDb = newDb({ autoCreateForeignKeyIndices: true });
+  return new (memoryDb.adapters.createPg().Pool)();
+}
+
 function getPool() {
   if (pool) return pool;
   if (process.env.LOCAL_DEMO === "1") {
-    const { newDb } = require("pg-mem");
-    const memoryDb = newDb({ autoCreateForeignKeyIndices: true });
-    pool = new (memoryDb.adapters.createPg().Pool)();
+    pool = createMemoryPool();
+    return pool;
+  }
+  if (!process.env.DATABASE_URL && process.env.RAILWAY_PROJECT_ID) {
+    usesRailwayDemoFallback = true;
+    console.warn("[demo] DATABASE_URL is missing; using an ephemeral in-memory database until Railway PostgreSQL is connected.");
+    pool = createMemoryPool();
     return pool;
   }
   if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is required. Set LOCAL_DEMO=1 only for local test mode.");
@@ -59,6 +71,15 @@ async function initializeDatabase() {
   `);
   await database.query(`INSERT INTO products (id,title,subtitle,duration,departure,airline,destination,description,highlights,itinerary,included,excluded,notes) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) ON CONFLICT (id) DO NOTHING`, [product.id, product.title, product.subtitle, product.duration, product.departure, product.airline, product.destination, product.description, JSON.stringify(product.highlights), JSON.stringify(product.itinerary), JSON.stringify(product.included), JSON.stringify(product.excluded), JSON.stringify(product.notes)]);
   for (const image of imageSeed) await database.query(`INSERT INTO product_images (product_id,position,url,alt,author,source_url,license,license_url) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (product_id,position) DO NOTHING`, [product.id, image.position, image.url, image.alt, image.author, image.sourceUrl, image.license, image.licenseUrl]);
+  if (usesRailwayDemoFallback) {
+    await database.query(`
+      INSERT INTO departures (product_id,travel_date,adult_price,child_price,infant_price,capacity,note)
+      VALUES
+        ($1,'2026-10-15',949000,849000,150000,20,'公网演示团期'),
+        ($1,'2026-11-12',979000,879000,150000,20,'公网演示团期')
+      ON CONFLICT (product_id,travel_date) DO NOTHING
+    `, [product.id]);
+  }
   const username = process.env.ADMIN_INITIAL_USERNAME || "admin";
   if (process.env.ADMIN_INITIAL_PASSWORD) {
     const found = await database.query("SELECT id FROM admin_users WHERE username=$1", [username]);
